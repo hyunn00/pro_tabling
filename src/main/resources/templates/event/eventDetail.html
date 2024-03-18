@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{event/event_layout}">
+
+<th:block th:fragment="content">
+    <div id="contents">
+        <div class="detailHeader">
+            <h3>[ [[${event.getRestNo().getRestName()}]] ] [[${event.getEventTitle()}]]</h3>
+            <em class="date">
+                <span>기간 : </span>
+                [[${event.getEventStartTime()}]] ~ [[${event.getEventEndTime()}]]
+            </em>
+        </div>
+
+        <div class="detailContent">
+            <th:block th:if="${event.getEventImg() != null}">
+                <img th:src="'data:image/jpeg;base64,' + ${event.getBase64Image()}">
+            </th:block>
+            <th:block th:unless="${event.getEventImg() != null}">
+                <img src="/img/no_image.png">
+            </th:block>
+        </div>
+
+        <div class="detailForm">
+            <div class="formDiv">
+                <p><label>제목</label><input type="text" th:value="${event.getEventTitle()}" readonly></p>
+                <p><label>이벤트 기간</label><input id="text" th:value="|${event.getEventStartTime()}~${event.getEventStartTime()}|" readonly></p>
+                <p><label>내용</label><textarea name="eventContent" rows="5" readonly>[[${event.getEventContent()}]]</textarea></p>
+            </div>
+        </div>
+
+        <div class="detailFooter">
+            <a href="/event/home" class="btn1">이벤트 목록</a>
+            <a th:href="@{/detail(restNo=${event.getRestNo().getRestNo()})}" class="btn1">이벤트 가게 보기</a>
+            <a href="" class="btn2">
+                <ion-icon id="btn_share" name="share-social-outline"></ion-icon>
+                공유하기
+            </a>
+        </div>
+    </div>
+</th:block>
+</html>

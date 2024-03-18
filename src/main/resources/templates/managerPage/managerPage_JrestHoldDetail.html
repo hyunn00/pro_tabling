@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>가게 정보 상세 보기</title>
+</head>
+
+<div th:fragment="managerContent">
+    <div id="right2">
+
+
+        <div class="modalD">
+            <div class="formDiv" style="display: flex; width: 900px; margin-top: 35px; margin-bottom: 35px">
+
+                <div style="flex: 1; margin-left: 30px; margin-top: 150px">
+                    <img id="preview" th:src="'data:image/jpeg;base64,' + ${img.get().base64Image}" alt="User Image"
+                         style="width: 400px; height: 500px; margin-right: 80px; cursor: pointer;">
+                </div>
+
+                <div style="flex: 1;">
+                    <p><label>가게 번호 </label><input type="text" th:value="${dinning.get().restNo}" name="restNo"
+                                                   readonly></p>
+                    <p><label>가게명 </label><input type="text" th:value="${dinning.get().restName}" name="restName"></p>
+                    <p><label>주소 </label><input type="text" th:value="${dinning.get().restAddr}" name="restAddr"></p>
+                    <p><label>전화번호 </label><input type="text" th:value="${dinning.get().restTel}" name="restTel"></p>
+                    <p><label>좌석 수 </label><input type="text" th:value="${dinning.get().restSeat}" name="restSeat"></p>
+                    <p><label>영업 시간 </label><input type="text" th:value="${dinning.get().restTime}" name="restTime"></p>
+                    <p><label>휴무 일정 </label><input type="text" th:value="${dinning.get().restOffDays}"
+                                                   name="restOffDays"></p>
+                    <p><label>주차장 </label><input type="text" th:value="${dinning.get().restParking}" name="restParking">
+                    </p>
+                    <p><label>메뉴 </label><input type="text" th:value="${dinning.get().restMenu}" name="restMenu"></p>
+                    <p><label>업태 </label><input type="text" th:value="${dinning.get().restCategory}"
+                                                name="restCategory"></p>
+                    <p><label>위도 </label><input type="text" th:value="${dinning.get().restLatitude}" name="restLatitude"
+                                                readonly></p>
+                    <p><label>경도 </label><input type="text" th:value="${dinning.get().restLongitude}"
+                                                name="restLongitude" readonly></p>
+                    <p><label>평점 </label><input type="text" th:value="${dinning.get().restScore}" readonly></p>
+                    <p><label>소개글 </label><input type="text" th:value="${dinning.get().restDescription}"
+                                                 name="restDescription"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</html>

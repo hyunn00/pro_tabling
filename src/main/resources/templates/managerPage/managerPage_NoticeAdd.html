@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>공지 사항 추가</title>
+</head>
+
+<div th:fragment="managerContent">
+    <script>
+        <!-- CKEditor CDN 추가 -->
+        <script src="https://cdn.ckeditor.com/ckeditor5/12.4.0/classic/ckeditor.js"></script>
+    </script>
+
+    <style>
+        ion-icon:hover {
+            cursor: pointer;
+        }
+
+        .ck-editor__editable {
+            min-height: 500px
+        }
+    </style>
+    <div id="right2">
+        <ion-icon style="float:right; font-size: 40px" onclick="history.go(-1);" name="close-outline"></ion-icon>
+
+        <form id="noticeForm" action="/manager/managerPage_NoticeAdd" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="subject"><h3>제목:</h3></label>
+                <input type="text" name="subject" class="form-control" id="subject" style="width: 80%">
+            </div>
+            <br>
+            <input type="hidden" name="writer" value="admin">
+            <div class="form-group">
+                <label for="content"><h3>내용:</h3></label>
+                <textarea style="width: 700px; height: 600px" name="content" class="form-control"
+                          id="content"></textarea>
+            </div>
+
+            <div id="addFile">
+                <div>
+                    <span>첨부파일</span> <span style="font-size: 12px">(사진 클릭 시 삭제 됩니다.)</span><br>
+                    <input type="file" name="file" id="file" multiple><br>
+                </div>
+<!--                <div id="preview"></div>-->
+                <div id="preview">
+                    <div id="previewImage"></div>
+                    <p id="imageSize"></p>
+                </div>
+
+
+            </div>
+
+            <input type="hidden" name="writerdate" value="">
+
+            <div style="text-align: center;">
+                <button style="margin-top: 50px" type="button" class="fifth" id="submitBtn">등록</button>
+            </div>
+        </form>
+
+    </div>
+
+    <script>
+        document.getElementById("submitBtn").addEventListener('click', function () {
+            const subject = document.getElementById('subject').value;
+            const content = document.getElementById('content');
+
+            if (subject === '' || content === null) {
+                swal("모든 항목을 입력하세요 :)");
+                return;
+            }
+
+            swal({
+                title: "등록하시겠습니까?",
+                text: "공지 사항을 등록하시겠습니까?",
+                icon: "info",
+                buttons: {
+                    confirm: {
+                        text: "등록",
+                        value: true,
+                        visible: true,
+                        className: "confirm-button",
+                        closeModal: true
+                    },
+                    cancel: {
+                        text: "취소",
+                        value: null,
+                        visible: true,
+                        className: "cancel-button",
+                        closeModal: true
+                    }
+                },
+                dangerMode: false,
+            })
+                .then((willAdd) => {
+                    if (willAdd) {
+                        swal("Success!", "공지사항 등록이 완료 되었습니다.", "success")
+                            .then(function () {
+                                document.getElementById("noticeForm").submit();
+                            })
+                    } else {
+                        swal("등록이 취소 되었습니다.")
+                    }
+                });
+        });
+
+        ClassicEditor
+            .create(document.querySelector('#content'))
+            .catch(error => {
+                console.error(error);
+            });
+
+        function updatePreview() {
+            let files = document.getElementById('file').files;
+            let preview = document.getElementById('preview');
+            preview.innerHTML = '';
+
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i];
+                let reader = new FileReader();
+
+                reader.onload = function (event) {
+                    let image = new Image();
+                    image.src = event.target.result;
+                    image.onload = function () {
+                        let div = document.createElement('div');
+                        div.classList.add('image-preview');
+                        div.appendChild(image);
+                        let fileSize = (file.size / 1024).toFixed(2);
+                        div.insertAdjacentHTML('beforeend', '<p>사진 크기: ' + fileSize + ' KB</p>');
+                        image.style.maxWidth = '150px';
+                        image.style.maxHeight = '150px';
+                        preview.appendChild(div);
+                    }
+                }
+
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('file').addEventListener('change', function () {
+            updatePreview();
+        });
+
+        document.getElementById("preview").addEventListener('click', function(event) {
+            if (event.target.tagName === 'IMG') {
+                let clickedImage = event.target.parentNode;
+                let fileInput = document.getElementById('file');
+                clickedImage.parentNode.removeChild(clickedImage);
+
+                fileInput.value = '';
+            }
+        });
+
+
+    </script>
+</div>
+</html>

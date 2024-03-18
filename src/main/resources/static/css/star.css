@@ -1,0 +1,38 @@
+
+
+.rating .rate_radio {
+
+    display: none;
+
+}
+
+.rating label {
+    /*border: 0.5px solid gray;*/
+    position: relative;
+    display: block;
+    float: left;
+    z-index: 10;
+    width: 16px;
+    height: 17px;
+    background-image: url("../img/starrate.png");
+    background-repeat: no-repeat;
+    background-size: 16px 17px;
+    /*cursor: pointer;*/
+}
+
+.ratefillYellow {
+    background-color: #e9e93c;
+    height: 17px;
+    position: absolute;
+    z-index: 2;
+}
+
+
+
+.ratefillGray {
+    position: absolute;
+    background-color: #808080ad;
+    height: 17px;
+    width: 80px;
+    z-index: 1;
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="footerFragment" style="background-color: rgb(245, 245, 245)!important;">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css"
+          integrity="sha512-10/jx2EXwxxWqCLX/hHth/vu2KY3jCF70dCQB8TSgNjbCVAC/8vai53GfMDrO2Emgwccf2pJqxct9ehpzG+MTw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <style>
+        .footers {
+            margin: 55px 35px;
+            color: #FFFFFF;
+        }
+
+        .footerQABtn {
+            color: inherit;
+        }
+
+        .footerQABtn, #btnHover {
+            transition: all 0.1s ease;
+        }
+
+        .footerQABtn:hover {
+            color: black;
+        }
+
+        #btnHover:hover {
+            background-color: #FFFFFF;
+        }
+
+        #instarBtn:hover{
+            color: grey;
+        }
+    </style>
+
+    <div class="footer_box" style="background-color: black">
+        <div style="display: flex; justify-content: center">
+            <div style="display: flex; flex-direction: column;" class="footers">
+                <span style="font-weight: bold">ㅣ 계좌정보</span>
+                <div style="margin: 8px 0">
+                    <span style="font-weight: bold; font-size: 25px">대구은행</span><br>
+                    <span>123-1000-4567-11</span>
+                </div>
+                <span>(예금주 : 영남인재교육원)</span>
+            </div>
+            <div style="display: flex; flex-direction: column;" class="footers">
+                <span style="font-weight: bold">ㅣ 고객센터</span>
+                <div style="margin: 8px 0">
+                    <span>평일 11:00 - 17:00</span><br>
+                    <span>점심 12:00 - 14:00</span><br>
+                    <span>주말,공휴일 제외</span>
+                </div>
+                <div>
+                    <a th:href="@{/QA/user_qa_selete}" class="footerQABtn">
+                        <div style="border: 1px solid white; width: 187px; height: 37px;
+                         display: flex; justify-content: center ; align-items: center; margin-top: 10px" id="btnHover">
+                            <span><i class="fa-regular fa-pen-to-square"></i>    문의하기</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column;" class="footers">
+                <span style="font-weight: bold">ㅣ ABOUT US</span>
+                <div style="margin: 8px 0; font-size: 12px">
+                    <span>상호 : 예약맛집 예맛!</span><br>
+                    <span>대표자명 : 김영남</span><br>
+                    <span>대구광역시 서구 서대구로 7길2 (내당동 245-4번지 2층)</span><br>
+                    <span>사업자번호 : 123-01-45678</span><br>
+                    <span>이메일 : yiorkr@naver.com</span>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column;" class="footers">
+                <span style="font-weight: bold">ㅣ INFORMATION</span>
+                <div style="margin: 8px 0; font-size: 12px">
+                    <a th:href="@{/policy/service}"><span>이용약관</span></a><br>
+                    <a th:href="@{/policy/privacy}"><span>개인정보처리방침</span></a><br>
+                    <a th:href="@{/policy/location}"><span>위치기반서비스 이용약관</span></a><br>
+                    <span>회원혜택</span><br>
+                    <span>Copyrightⓒ영남인재교육원 All Rights Reserved.</span>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column;" class="footers">
+                <span style="width: 25px; height: 25px;"  id="instarBtn">
+                    <a href="" style="color: inherit"><i class="fa-brands fa-instagram" style="font-size: 25px"></i></a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

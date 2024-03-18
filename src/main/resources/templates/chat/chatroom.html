@@ -1,0 +1,268 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<div class="chats" th:fragment="chatFragment">
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script th:src="@{/js/cust_receiver.js}" ></script>
+
+    <style>
+        .chats .content{
+            width:300px;
+            height:488px;
+        }
+        .chats .content .headline {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .chats .content .footer {
+            position: absolute;
+            left: 0px;
+            bottom: 10px;
+            display: flex;
+            justify-content: space-evenly;
+            width: 100%;
+        }
+        .chats .content .footer button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.4;
+        }
+        .chats .content .list p{
+            color: #bdbdbd;
+        }
+        .chats .content .list {
+            background-color: #fff;
+            padding: 4px 4px;
+            border-radius: 20px;
+        }
+        .chats .content .list>div>div{
+            display: inline-block;
+        }
+        .chats .content .list>div div{
+            font-size: 0.8rem;
+        }
+        .chats .content .list .restNo{
+            display: none;
+        }
+        /*.chats .content .list>div>div*/
+        .chats .content .list .alLine1{
+            display: block;
+            position: relative;
+            top: -8px;
+        }
+        .chats .content .list .regDate{
+            display: inline-block;
+            color: rgba(0, 0, 0, 0.4);
+        }
+        .chats .content .list .restname{
+            display: inline-block;
+            font-weight: 600;
+        }
+        .chats .content .list .item{
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 20px;
+        }
+        .chats .content .list .item:hover{
+            background-color: #0000000D;
+        }
+        .chats .content .list img{
+            width:42px;
+            height:42px;
+            display: inline;
+            vertical-align: bottom;
+        }
+    </style>
+
+    <div class="content">
+        <div class="headline">예약 알림</div>
+        <div class="list home"><p>현재 알림이 없습니다.</p></div>
+        <div class="list chat" style="display: none;"></div>
+        <div class="list notify" style="display: none;">
+            이 디자인은 학습을 목적으로 <a href="https://channel.io/" target="_blank">채널톡</a>을 참고하여 만들었으며, 모든 저작권은 <a href="https://channel.io/" target="_blank">채널톡</a>에 있습니다.
+        </div>
+        <div class="footer">
+            <button style="opacity: 1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" >
+                <path fill="currentColor" fill-rule="evenodd" d="M12.614 2.477a1 1 0 0 0-1.228 0L3.772 8.4A2 2 0 0 0 3 9.98V20a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-5a1 1 0 1 1 2 0v5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9.978a2 2 0 0 0-.772-1.579zM9 19v-4a3 3 0 1 1 6 0v4h4V9.978l-7-5.444L5 10v9z" clip-rule="evenodd"></path>
+            </svg>
+            <span>홈</span>
+            </button>
+            <button>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" >
+                <path fill="currentColor" fill-rule="evenodd" d="M20.822 16.683c-.246.461-.265 1.011-.099 1.507l.638 1.915a1 1 0 0 1-1.264 1.265l-1.37-.457-.553-.184c-.493-.164-1.037-.145-1.496.1-1.949 1.039-4.275 1.461-6.73.967-4.002-.805-7.166-4.093-7.819-8.121A10.013 10.013 0 0 1 13.664 2.137c4.03.652 7.318 3.817 8.123 7.817.494 2.455.074 4.78-.965 6.729m-14.616-4.69c0 .744.609 1.353 1.353 1.353.745 0 1.353-.609 1.353-1.353S8.304 10.64 7.56 10.64c-.744 0-1.353.608-1.353 1.352m5.834 1.353a1.357 1.357 0 0 1-1.353-1.353c0-.744.61-1.352 1.353-1.352.745 0 1.353.608 1.353 1.352s-.609 1.353-1.353 1.353m3.128-1.353c0 .744.608 1.353 1.353 1.353.744 0 1.353-.609 1.353-1.353s-.61-1.352-1.353-1.352c-.745 0-1.353.608-1.353 1.352" clip-rule="evenodd"></path>
+            </svg>
+            <span>대화</span>
+            </button>
+            <button>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" >
+                <path fill="currentColor" fill-rule="evenodd" d="M7 12a5 5 0 1 1 10 0 5 5 0 0 1-10 0m15 1.5v-3l-2.23-.372a8 8 0 0 0-.955-2.296l1.316-1.843-2.12-2.12-1.844 1.316a8 8 0 0 0-2.295-.955L13.5 2h-3l-.372 2.23a8 8 0 0 0-2.296.955L5.99 3.868 3.87 5.99l1.315 1.843a8 8 0 0 0-.954 2.296L2 10.5v3l2.23.372c.198.822.523 1.594.954 2.296l-1.316 1.843 2.121 2.121 1.843-1.317a8 8 0 0 0 2.296.955L10.5 22h3l.372-2.23a8 8 0 0 0 2.295-.955l1.843 1.317 2.121-2.12-1.316-1.844a8 8 0 0 0 .955-2.296z" clip-rule="evenodd"></path>
+            </svg>
+            <span>설정</span>
+            </button>
+
+    </div>
+    <script>
+
+        let myMessage = []
+        let m_restIndex = 0;
+
+
+
+        async function handleAlarmButtonClick( event ) {
+            let chatContainer = document.querySelector("[name=chat]");
+            chatContainer.classList.toggle("visible");
+
+            if ( chatContainer.classList.contains( "visible") )
+            {
+                await sleep( 100 );
+                chatContainer.style.opacity = 1;
+            }
+            else
+                chatContainer.style.opacity = 0;
+
+            document.querySelector( ".alarm-button" ).classList.remove( "new");
+        }
+        document.addEventListener( "chatAlarmButtonClick", handleAlarmButtonClick );
+
+        function handleNewMessage( event ){
+            myMessage.push( event.data );
+            document.querySelector( ".alarm-button" ).classList.add( "new");
+
+            // [...document.querySelectorAll( "#navbarNav button" )].findLast(e=>e).appendChild( Object.assign(document.createElement('img'), {
+            //     src:'/img/no_image.png',
+            //     style:'width: 32px;height: 32px;position: relative;right: 36px;top: 0px;'
+            // } ) );
+
+            appendMessage( event );
+        }
+        document.addEventListener( "new_message_stomp_subscribe", handleNewMessage );
+
+        function handleConnected( event ) {
+            document.querySelector( ".alarm-button" ).classList.toggle( "noCon", event.type === "lost_connection_stomp_server" );
+        }
+        document.addEventListener( "connected_stomp_server", handleConnected );
+        document.addEventListener( "lost_connection_stomp_server", handleConnected );
+
+        // 메시지 갱신 정보에 날짜 시간 정보도 필요함 (6분전 ...)
+        let myHomeData = {};
+        let myChatData = {};
+        let curRestId = 0;
+        function appendMessage( event ) {
+            let payload = event.data;
+
+            myHomeData[ payload.id ] = payload;
+            myChatData[payload.id] = (myChatData[payload.id] || []).concat(payload);
+
+
+            const datePrefix = [ '월', '일', '시', '분', '초' ];
+            let newStr = "";
+            for ( const key in myHomeData )
+            {
+                let item = myHomeData[ key ];
+
+                let className = 'item ' + ( item.nickname === '' ? 'mine' : 'yours' );
+
+                newStr += `<div class="${className}">
+                            <img mysrc="${item.region}">
+                            <div>
+                                <div class="restNo">${item.id}</div>
+                                <div class="alLine1">
+                                    <div class="restname">${item.nickname}</div>
+                                    <div class="regDate">${item.regDate.slice(1,6).map((e,i)=>e+datePrefix[i]).join('')}</div>
+                                </div>
+                                <div class="message">${item.message}</div>
+                            </div>
+                        </div>`;
+
+            }
+
+            const chats = document.querySelector('.chats .content .list');
+            chats.innerHTML = newStr;
+            chats.addEventListener( "click",handleHomeListClick );
+
+            chats.querySelectorAll( "img[mysrc]" ).forEach( e=>io2.observe(e))
+
+
+
+
+
+
+
+
+            // let className = 'item ' + ( payload.nickname === '' ? 'mine' : 'yours' );
+            // const html = `<div class="${className}">
+            //                 <img mysrc="${payload.region}">
+            //                 <div>
+            //                     <div class="restNo">${payload.id}</div>
+            //                     <div class="restname">${payload.nickname}</div>
+            //                     <div class="message">${payload.message}</div>
+            //                 </div>
+            //             </div>`
+            //
+            // chats.insertAdjacentHTML('beforeend', html);
+            //
+            // let images = chats.getElementsByTagName('img');
+            // io2.observe( images[images.length - 1] );
+
+        }
+        function handleHomeListClick(event) {
+            let item = event.target.closest( '.item' );
+            if ( !item )
+                return;
+
+            updateChatList( item.querySelector( '.restNo' ).textContent );
+            document.querySelectorAll( ".chats .footer button")[1].dispatchEvent( new Event( "click") );
+        }
+
+        function updateChatList( nextRestNo ) {
+            let itemList = myChatData[ nextRestNo ];
+            const datePrefix = [ '월', '일', '시', '분', '초' ];
+            let newStr = "";
+            for ( const key in itemList )
+            {
+                let item = itemList[ key ];
+                let className = 'item ' + ( item.nickname === '' ? 'mine' : 'yours' );
+                newStr += `<div class="${className}">
+                            <img mysrc="${item.region}">
+                            <div>
+                                <div class="restNo">${item.id}</div>
+                                <div class="alLine1">
+                                    <div class="restname">${item.nickname}</div>
+                                    <div class="regDate">${item.regDate.slice(1,6).map((e,i)=>e+datePrefix[i]).join('')}</div>
+                                </div>
+                                <div class="message">${item.message}</div>
+                            </div>
+                        </div>`;
+
+            }
+
+            const chats = document.querySelector('.chats .content .chat');
+            chats.innerHTML = newStr;
+
+            chats.querySelectorAll( "img[mysrc]" ).forEach( e=>io2.observe(e))
+        }
+
+
+        document.querySelectorAll( ".chats .footer button").forEach( (elem, index)=>{
+            elem.addEventListener( "click", ()=>{
+                document.querySelectorAll( ".chats .footer button").forEach( (e, i)=>{
+                    e.style.opacity = index === i ? 1 : 0.4;
+                });
+                document.querySelectorAll( ".chats .content .list").forEach( (e, i)=>{
+                    e.style.display = index === i ? "block" : "none";
+                });
+            });
+        })
+
+
+
+    </script>
+
+    <script src="/js/imglazy2.js"></script>
+</div>
+</html>

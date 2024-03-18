@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>가게 정보 상세 보기</title>
+</head>
+
+<div th:fragment="managerContent">
+    <div id="right2">
+
+
+        <div class="modalD2">
+            <div class="formDiv" style="width: 900px; margin-top: 35px; margin-bottom: 35px">
+
+                <div>
+                    <label>리뷰 내용 </label>
+                    <p th:text="${review.get().revContent}"></p>
+                </div>
+
+                <div th:if="${images == null or images.empty}">
+
+                </div>
+
+                <div th:if="${images != null and !images.empty}" style="display: flex; flex-wrap: wrap; margin-left: -30px;">
+                    <div th:each="image : ${images}" style="margin-left: 15px; margin-top: 10px;">
+                        <img id="preview" th:src="'data:image/jpeg;base64,' + ${image.base64Image}" alt="User Image"
+                             style="width: 180px; height: 100px; margin-right: 30px; cursor: pointer;">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</html>

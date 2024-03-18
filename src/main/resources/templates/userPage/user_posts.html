@@ -1,0 +1,1020 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{userPage/Layout_userPage2}">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      integrity="sha512-dlQ1m6eFYTV3tiZ3l3r0I5zJPCv+MIiT5sYX5FvO6PXq54tLFtqUOVXHbB3A5TcC2vX6SVUy2Ld7h0I3Hhu0fQ=="
+      crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css" integrity="sha512-10/jx2EXwxxWqCLX/hHth/vu2KY3jCF70dCQB8TSgNjbCVAC/8vai53GfMDrO2Emgwccf2pJqxct9ehpzG+MTw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<th:block th:fragment="content">
+    <!--    <link th:href="@{/css/userPage/starRank.css}" rel="stylesheet">-->
+
+
+
+
+    <style>
+
+        li {
+            list-style: none;
+        }
+
+        #remoteList label {
+            list-style: none;
+            cursor: pointer;
+        }
+
+        #posts_main {
+            display: flex;
+            /*justify-content: center;*/
+            /*align-items: center;*/
+            flex-direction: column;
+        }
+
+        .container1 {
+            display: flex;
+            padding: 15px;
+            padding-bottom: 15px;
+            /*padding-bottom: 435px;*/
+            background: #fff;
+            border: 1.6px solid #dddddd;
+            border-radius: 14px;
+            box-sizing: border-box;
+            margin-bottom: 65px;
+            /*margin-top: 60px;*/
+            transition: padding-bottom 0.5s ease-in-out; /* 애니메이션을 추가합니다. */
+        }
+
+        .left {
+            background-color: gray;
+            display: inline-block;
+            width: 300px;
+            height: 221px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .left2 {
+            /*background-color: gray;*/
+            display: inline-block;
+            width: 300px;
+            height: 221px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .right {
+            width: 447px;
+            margin-left: 14px;
+            text-align: center;
+        }
+
+        hr {
+            display: block;
+            unicode-bidi: isolate;
+            margin-block-start: 0.5em;
+            margin-block-end: 0.5em;
+            margin-inline-start: auto;
+            margin-inline-end: auto;
+            overflow: hidden;
+            border-style: inset;
+            border-width: 1px;
+        }
+
+        .grayBtn {
+            background-color: gray;
+            color: white;
+            width: 26%;
+            height: 36px;
+            border: none;
+            font-size: 15px;
+            line-height: 36px;
+            text-align: center;
+            cursor: pointer;
+            margin-left: -5px;
+            margin-top: 18px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        #resCompBtn {
+            background-color: gray;
+            color: white;
+            width: 26%;
+            height: 36px;
+            border: none;
+            font-size: 15px;
+            line-height: 36px;
+            text-align: center;
+            cursor: pointer;
+            margin-left: -5px;
+            margin-top: 18px;
+            font-weight: bold;
+        }
+
+        .yellowBtn {
+            background-color: rgb(215 215 42 / 70%);
+            color: white;
+            width: 26%;
+            height: 36px;
+            border: none;
+            font-size: 15px;
+            line-height: 36px;
+            text-align: center;
+            cursor: pointer;
+            margin-left: -5px;
+            margin-top: 18px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .greenBtn {
+            background-color: rgba(42, 215, 82, 0.7);
+            color: white;
+            width: 26%;
+            height: 36px;
+            border: none;
+            font-size: 15px;
+            line-height: 36px;
+            text-align: center;
+            margin-left: -5px;
+            margin-top: 18px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .reviewBtn {
+            margin-left: -10px;
+            width: 50%;
+            height: 36px;
+            border: none;
+            font-size: 15px;
+            line-height: 36px;
+            color: #fff;
+            background-color: rgba(0, 119, 255, 0.66);
+            text-align: center;
+            cursor: pointer;
+            margin-top: 18px;
+            font-weight: bold;
+            margin-left: 0px;
+        }
+
+        .reviewBtn.expanded {
+            display: none;
+        }
+
+
+        .reviewBtn2 {
+            margin-left: -10px;
+            width: 50%;
+            height: 36px;
+            border: none;
+            font-size: 15px;
+            line-height: 36px;
+            color: #fff;
+            background-color: rgba(0, 119, 255, 0.66);
+            text-align: center;
+            cursor: pointer;
+            margin-top: 18px;
+            font-weight: bold;
+        }
+
+        .reviewAddBtn {
+            margin-left: -43px;
+            width: 50%;
+            height: 36px;
+            border: none;
+            font-size: 15px;
+            line-height: 36px;
+            color: #fff;
+            background-color: rgb(94 166 249);
+            text-align: center;
+            cursor: pointer;
+            margin-top: 9px;
+            font-weight: bold;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        .reviewBtnComplete {
+            margin-left: -10px;
+            width: 50%;
+            height: 36px;
+            border: none;
+            font-size: 15px;
+            line-height: 36px;
+            color: #fff;
+            /*background-color: rgb(112 102 245);*/
+            background-color: gray;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 18px;
+            font-weight: bold;
+        }
+
+        .filter {
+            filter: grayscale(100%);
+        }
+
+        .mypage_sidebar_nav {
+            color: gray;
+        }
+
+        #postsSelect {
+            font-weight: bold;
+            color: black;
+            border-bottom: 2px solid black;
+        }
+
+        /*.writeRev {*/
+        /*    display: flex;*/
+        /*    padding: 15px;*/
+        /*    background: #fff;*/
+        /*    border: 1.6px solid #dddddd;*/
+        /*    border-radius: 4px;*/
+        /*    box-sizing: border-box;*/
+        /*    margin-bottom: 15px;*/
+        /*    margin-top: 60px;*/
+        /*}*/
+
+        .mid {
+            border-top: 1.6px solid #dddddd;
+            width: 96%;
+            margin-bottom: 169px;
+            align-items: center;
+            flex-direction: column;
+            margin-top: -679px;
+            margin-left: 15px;
+            display: none;
+        }
+
+        .containers.expanded .mid {
+            display: block;
+        }
+
+        .wrap1 {
+            max-width: 480px;
+            margin: 0 auto; /* 화면 가운데로 */
+            /*background-color: #ababab;*/
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+
+        }
+
+        .rate_radio {
+            z-index: 20;
+            opacity: 0;
+            width: 60px;
+            height: 60px;
+            background-color: #a19f9f;
+            cursor: pointer;
+            position: absolute;
+            left: -999px;
+        }
+
+        .rate_radio + label {
+            /*border: 0.5px solid gray;*/
+            position: relative;
+            display: block;
+            float: left;
+            z-index: 10;
+            width: 59px;
+            height: 60px;
+            background-image: url("/img/starrate.png");
+            background-repeat: no-repeat;
+            background-size: 60px 60px;
+            cursor: pointer;
+        }
+
+        .rating .ratefillYellow {
+            background-color: #ff8;
+            height: 60px;
+            position: absolute;
+            width: 60px;
+            transition: width 0.3s;
+            z-index: 9;
+        }
+
+        .rating .ratefillGray {
+            position: absolute;
+            background-color: gray;
+            height: 60px;
+            width: 295px;
+            z-index: 1;
+        }
+
+        .RestNoHover:hover {
+            font-size: 105%;
+            color: #282828;
+        }
+
+        .search-icon {
+            width: 1rem;
+            height: 1rem;
+            position: relative;
+            display: inline-flex;
+            box-sizing: border-box;
+            margin: -0.25rem 0 0 -0.25rem;
+            /*color: var(--search-color);*/
+            border: 0.125rem solid currentColor;
+            border-radius: 50%;
+        }
+
+        i {
+            font-style: italic;
+        }
+
+        #remote {
+            border: 1px solid rgba(128, 128, 128, 0.35);
+            border-radius: 14px;
+            width: 320px;
+            height: 500px;
+            transition: margin-top 0.8s ease;
+            /*background-color: rgba(255, 255, 255, 0.4);*/
+        }
+
+        .remoteLabel {
+            padding-left: 10px;
+            font-weight: normal;
+        }
+
+        /*.remoteLabel:hover {*/
+        /*    font-size: 105%;*/
+        /*}*/
+
+        .boldLabel {
+            font-weight: bold;
+        }
+
+        #imgLabel {
+            border: 1px solid grey;
+            width: 700px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.79)
+        }
+        #imgLabel:hover{
+            background-color: rgba(190, 190, 190, 0.53);
+            cursor: pointer;
+        }
+    </style>
+
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Josefin+Slab:100,300,400,600,700);
+
+        .btnLightBlue {
+            background: #5DC8CD;
+            transition: all 0.2s ;
+        }
+        .btnLightBlue.btnPush {
+            box-shadow: 0px 5px 0px 0px #1E8185;
+        }
+        .btnPush:hover {
+            margin-top: 3px;
+            margin-bottom: 3px;
+        }
+        .btnLightBlue.btnPush:hover {
+            box-shadow: 0px 0px 0px 0px #1E8185;
+        }
+
+        @keyframes heartbeat {
+            0% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(1.2);
+            }
+            50% {
+                transform: scale(1);
+            }
+            75% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .fa-heart {
+            position: relative;
+            left: -50px;
+            top: 95px;
+            z-index: 1;
+            font-size: 30px;
+            color: rgba(243, 54, 54, 0.73);
+            transition: transform 0.3s ease-in-out;
+        }
+        .fa-heart:hover {
+            transform: scale(1.2);
+            animation: heartbeat 2.4s infinite;
+        }
+        .fa-heart:hover {
+            font-size: 34px;
+        }
+
+        .fa-regular fa-heart {
+            position: relative;
+            left: -50px;
+            top: 95px;
+            z-index: 1;
+            font-size: 30px;
+            color: #f33636;
+        }
+
+        .fa-solid fa-heart {
+            position: relative;
+            left: -50px;
+            top: 95px;
+            z-index: 1;
+            font-size: 30px;
+            color: #ff0000;
+        }
+
+        @keyframes intenseShake {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            12.5%, 37.5% {
+                transform: rotate(-20deg);
+            }
+            25%, 50% {
+                transform: rotate(20deg);
+            }
+            62.5%, 87.5% {
+                transform: rotate(-20deg);
+            }
+        }
+
+        .fa-gift {
+            animation: intenseShake 2s infinite;
+        }
+
+
+    </style>
+
+    <div style="display: flex; flex-direction: row; justify-content: space-evenly;">
+        <div>
+            <div id="remote" style="margin-left: 24%; background-color: #FFFFFF">
+                <div style="padding: 5%">
+                    <div style="display:flex; align-items: center">
+                        <img src="/img/search22.png" alt="" style="width: 25px; height: 25px">
+                        <h4>검색</h4>
+                    </div>
+                    <input size="27px" type="text" id="searchInput" placeholder="가게 이름 입력">
+                    <button class="btn btn-primary btn-circle" onclick="searchPost()">
+                        <i class="search-icon"></i>
+                    </button>
+                </div>
+                <hr>
+                <ul style="display: flex; flex-direction: column" id="remoteList">
+                    <div style="display:flex; align-items: center">
+                        <img src="/img/order.png" alt="" style="width: 15px; height: 15px">
+                        <h4 style="margin-left: 4px">정렬</h4>
+                    </div>
+                    <li onclick="filterAll()" style="padding: 10px 0">
+                        <div>
+                            <img src="/img/plusIcon.png" alt="" style="width: 16px; height: 16px">
+                            <label class="remoteLabel" id="remoteLabel5">전체 예약 보기</label>
+                        </div>
+                    </li>
+                    <li onclick="filterWait()" style="padding: 10px 0">
+                        <div>
+                            <img src="/img/plusIcon.png" alt="" style="width: 16px; height: 16px">
+                            <label class="remoteLabel" id="remoteLabel3">예약대기중인 예약 보기</label>
+                        </div>
+                    </li>
+                    <li onclick="filterResCompleted()" style="padding: 10px 0">
+                        <div>
+                            <img src="/img/plusIcon.png" alt="" style="width: 16px; height: 16px">
+                            <label class="remoteLabel" id="remoteLabel4">예약완료된 예약 보기</label>
+                        </div>
+                    </li>
+                    <li onclick="filterExpired()" style="padding: 10px 0">
+                        <div>
+                            <img src="/img/plusIcon.png" alt="" style="width: 16px; height: 16px">
+                            <label class="remoteLabel" id="remoteLabel1">이용완료된 예약 보기</label>
+                        </div>
+                    </li>
+                    <li onclick="filterReview()" style="padding: 10px 0">
+                        <div>
+                            <img src="/img/plusIcon.png" alt="" style="width: 16px; height: 16px">
+                            <label class="remoteLabel" id="remoteLabel2">리뷰작성된 예약 보기</label>
+                        </div>
+                    </li>
+                    <li style="display: flex; justify-content: center">
+                        <img src="/img/upside.png" alt="" style="width: 50px; height: 50px; margin-top: 31px; margin-left: -30px; cursor: pointer;" onclick="scrollToTop()">
+                    </li>
+                </ul>
+            </div>
+            <script>
+                function scrollToTop() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
+            </script>
+
+            <script th:inline="javascript">
+                let expired = /*[[ @{/user/user_posts(filterExpired='expired')} ]]*/ '';
+                let review = /*[[ @{/user/user_posts(filterReview='review')} ]]*/ '';
+                let wait = /*[[ @{/user/user_posts(filterWait='wait')} ]]*/ '';
+                let res_completed = /*[[ @{/user/user_posts(filterResCompleted='res_completed')} ]]*/ '';
+                let All = /*[[ @{/user/user_posts(filterAll='All')} ]]*/ '';
+
+                function searchPost() {
+                    let searchInput = document.getElementById("searchInput").value;
+                    let encodedSearchInput = encodeURIComponent(searchInput);
+
+                    window.history.pushState({searchInput}, "Search Results", "/user/user_posts?searchInput=" + encodedSearchInput);
+
+                    fetch("/user/user_posts?searchInput=" + encodedSearchInput)
+                        .then(resp => resp.text())
+                        .then(data => {
+                            let doc = new DOMParser().parseFromString(data, 'text/html');
+                            document.getElementById("searchPosts").innerHTML = doc.getElementById("searchPosts").innerHTML;
+
+                            window.location.reload();
+                        });
+                }
+
+                document.addEventListener("DOMContentLoaded", function () {
+                    var selectedLabelId = localStorage.getItem('selectedLabelId');
+                    if (selectedLabelId) {
+                        setActive(selectedLabelId);
+                    }
+                });
+
+                function setActive(labelId) {
+                    var allLabels = document.querySelectorAll('.remoteLabel');
+                    allLabels.forEach(function (label) {
+                        label.classList.remove('boldLabel');
+                    });
+
+                    var selectedLabel = document.getElementById(labelId);
+                    if (selectedLabel) {
+                        selectedLabel.classList.add('boldLabel');
+                        localStorage.setItem('selectedLabelId', labelId);
+                    }
+                }
+
+                function filterExpired() {
+                    window.location.href = expired;
+                    setActive('remoteLabel1');
+                }
+                function filterReview() {
+                    window.location.href = review;
+                    setActive('remoteLabel2');
+                }
+                function filterWait() {
+                    window.location.href = wait;
+                    setActive('remoteLabel3');
+                }
+                function filterResCompleted() {
+                    window.location.href = res_completed;
+                    setActive('remoteLabel4');
+                }
+                function filterAll() {
+                    window.location.href = All;
+                    setActive('remoteLabel5');
+                }
+
+                document.addEventListener('DOMContentLoaded', (event) => {
+                    const remote = document.getElementById('remote');
+                    const triggerScroll = 200;
+                    const postsMain = document.getElementById('posts_main');
+
+                    if (postsMain) {
+                        window.addEventListener('scroll', () => {
+                            const scrollY = window.scrollY;
+                            const maxMarginTop = postsMain.clientHeight - remote.clientHeight - 65;
+
+                            if (scrollY > triggerScroll) {
+                                remote.style.marginTop = `${Math.min(scrollY - triggerScroll, maxMarginTop)}px`;
+                            } else {
+                                remote.style.marginTop = '0';
+                            }
+                        });
+                    } else {
+                        console.error('Element with id posts_main not found.');
+                    }
+                });
+
+
+            </script>
+        </div>
+
+<!--        <div th:text="${main_user.getPoint()}"></div>-->
+
+<!--        <div th:text="${#lists.size(list)}"></div>-->
+
+        <div style="display: flex; justify-content: center; margin-bottom: 10px;" id="searchPosts">
+            <div id="posts_main" class="posts_main" th:style="'margin-right: 20%;' + (${#lists.size(list) <= 1 ? 'height: 891px;' : 'height: auto;'})">
+                <div id="wrap" class="containers" th:each="res : ${list}">
+
+                    <div id="container1" class="container1" style="display: flex">
+                        <div class="left">
+                            <img th:attr="mysrc=${res.getRestNo().getBase64Image()}"
+                                 th:class="${res.getReservationStatusEnum.getName()} == '대기' or ${res.getReservationStatusEnum.getName()} == '예약완료' ? 'disabled-filter' : 'filter'"
+                                 style="width: 300px; height: 221px; border-radius: 10px;">
+                            <i th:if="${res.isResLike()}" class="fa-heart fa-solid" id="likeBtn1" th:onclick="toggleLikeIcon(this, /*[[${res.getRestNo().restNo}]]*/)"></i>
+                            <i th:unless="${res.isResLike()}" class="fa-heart fa-regular" id="likeBtn2" th:onclick="toggleLikeIcon(this, /*[[${res.getRestNo().restNo}]]*/)"></i>
+
+                            <script th:inline="javascript">
+
+                                function toggleLikeIcon(element, restNo) {
+                                    element.classList.toggle('fa-regular');
+                                    element.classList.toggle('fa-solid');
+
+                                    Like(restNo);
+                                }
+                                function Like(restNo) {
+                                        $.ajax({
+                                            type: 'GET',
+                                            url: '/user/userLikeAdd',
+                                            data: {likeRestNo : restNo },
+                                            success: function () {
+                                                console.log('좋아요 성공 :');
+                                                location.reload()
+                                            },
+                                            error: function (error, data) {
+                                                console.error('좋아요 실패 :', error);
+                                                console.error('좋아요 실패 :', data);
+                                                console.error('좋아요 실패 :', restNo);
+                                            }
+                                        });
+                                }
+
+                            </script>
+                        </div>
+                        <div class="right">
+                            <p class="gray-text p-right"
+                               th:style="${res.getReservationStatusEnum.getName()} == '이용완료' or ${res.getReservationStatusEnum.getName()} == '예약거절' or ${res.getReservationStatusEnum.getName()} == '노쇼' or ${res.getReservationStatusEnum.getName()} == '취소됨' or ${res.getReservationStatusEnum().getName()} == '리뷰작성완료' ? 'color: gray;' : 'color: black;'">
+                                <a th:href="'/detail?restNo=' + ${res.restNo.restNo}">
+                                    <b style="font-size: 20px;" th:text="'  '+${res.restNo.restName}" class="RestNoHover"></b>
+                                </a><br>
+                                <i class="fa-solid fa-utensils" style="color: #74C0FC;"></i><b th:text="${'  '+res.restNo.restCategory}"></b><br>
+                                <i class="fa-regular fa-clock"></i><b th:text="'  예약 시간 : ' + @{${#strings.replace(res.resTime, 'T', ' ')}}"></b><br>
+                            <hr>
+                            <div>
+                                <i class="fa-solid fa-user" style="color: #74C0FC;"></i><b th:text="'  예약 인원 : ' + ${res.res_guest_count}"
+                                    th:style="${res.getReservationStatusEnum.getName()} == '이용완료' or ${res.getReservationStatusEnum.getName()} == '예약거절' or ${res.getReservationStatusEnum.getName()} == '노쇼' or ${res.getReservationStatusEnum.getName()} == '취소됨' or ${res.getReservationStatusEnum().getName()} == '리뷰작성완료' ? 'color: gray;' : 'color: black;'"></b>
+                            </div>
+                            <br>
+                            <b th:text="${res.restNo.restAddr}"
+                               th:style="${res.getReservationStatusEnum.getName()} == '이용완료' or ${res.getReservationStatusEnum.getName()} == '예약거절' or ${res.getReservationStatusEnum.getName()} == '노쇼' or ${res.getReservationStatusEnum.getName()} == '취소됨' or ${res.getReservationStatusEnum().getName()} == '리뷰작성완료' ? 'color: gray;' : 'color: black;'"></b><br>
+                            <div th:if="${res.getReservationStatusEnum.getName()} == '예약거절'" style="margin-top: 7px ;margin-bottom: -15px">
+                                <i class="fa-solid fa-circle-info"></i> <span style="color: grey; font-size: 12px">가게에서 취소 또는 예약 후 시간이 만료되어 거절이 되었습니다.</span>
+                            </div>
+                            <div th:if="${res.getReservationStatusEnum.getName()} == '이용완료'" style="margin-top: 11px ;margin-bottom: -15px">
+                                <i class="fa-solid fa-gift"></i>
+                                <span style="color: grey; font-size: 12px">리뷰 작성 시 <span style="color: #ef4040; font-weight: bold;">100Point</span> 지급!!</span>
+                            </div>
+                            <button id="cancelBtn1"
+                                    th:if="${res.getReservationStatusEnum.getName() != '리뷰작성완료'}"
+                                    th:class="${res.getReservationStatusEnum.getName() == '대기' ? 'yellowBtn' : (res.getReservationStatusEnum.getName() == '예약완료' ? 'greenBtn' : 'grayBtn')}"
+                                    th:text="${res.getReservationStatusEnum.getName()}">
+                            </button>
+                            <button id="resCompBtn" class="grayBtn2"
+                                    th:if="${res.getReservationStatusEnum.getName() == '예약완료'}"
+                                    th:onclick="|location.href='/user/user_posts_detail/${res.getRes_no()}'|">
+                                상세보기
+                            </button>
+
+
+
+
+                            <button id="reviewBtn" class="reviewBtn "
+                                    th:if="${res.getReservationStatusEnum.getName() eq '이용완료' and revStatus ne 'OK'}">
+                                리뷰작성
+                            </button>
+                            <button id="reviewCompleteBtn" class="reviewBtnComplete"
+                                    th:if="${res.getReservationStatusEnum.getName() eq '리뷰작성완료'}">리뷰작성완료
+                            </button>
+                            <button id="reviewBtn2" class="reviewBtn2"
+                                    th:if="${res.getReservationStatusEnum.getName() eq '이용완료'}" style="display: none">
+                                작성취소
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mid">
+                        <div style="padding: 23px">
+                            <div style="display: flex; justify-content: flex-start; flex-direction: column; margin-right: 1px; height: 412px">
+                                <input type="hidden" name="rate" id="rate" value="0"/>
+                                <div style="display: flex; flex-direction: column; align-items: center ">
+                                    <form id="addRevForm" action="/user/submitReview" method="post"
+                                          enctype="multipart/form-data">
+
+                                        <div style="display: flex; flex-direction: column; align-items: center ;margin-bottom: 10px" class="file-container">
+                                            <h4> <i class="fa-regular fa-star"></i>  별점과 이용경험을 남겨주세요! <i class="fa-regular fa-star"></i></h4>
+                                             <p class="title_star" th:text="${res.getRestNo().restName}"
+                                               style="font-size: 17px;"></p>
+                                            <div class="rating">
+                                                <div class="ratefillGray"></div>
+                                                <div class="ratefillYellow"></div>
+                                                <input type="radio" name="revScore"
+                                                       th:id="'rating'+${resStat.index*5+1}"
+                                                       value="10" class="rate_radio"
+                                                       title="1점" checked>
+                                                <label class="rate_label"
+                                                       th:for="'rating'+${resStat.index*5+1}"></label>
+                                                <input type="radio" name="revScore"
+                                                       th:id="'rating'+${resStat.index*5+2}"
+                                                       value="20" class="rate_radio"
+                                                       title="2점">
+                                                <label class="rate_label"
+                                                       th:for="'rating'+${resStat.index*5+2}"></label>
+                                                <input type="radio" name="revScore"
+                                                       th:id="'rating'+${resStat.index*5+3}"
+                                                       value="30" class="rate_radio"
+                                                       title="3점">
+                                                <label class="rate_label"
+                                                       th:for="'rating'+${resStat.index*5+3}"></label>
+                                                <input type="radio" name="revScore"
+                                                       th:id="'rating'+${resStat.index*5+4}"
+                                                       value="40" class="rate_radio"
+                                                       title="4점">
+                                                <label class="rate_label"
+                                                       th:for="'rating'+${resStat.index*5+4}"></label>
+                                                <input type="radio" name="revScore"
+                                                       th:id="'rating'+${resStat.index*5+5}"
+                                                       value="50" class="rate_radio"
+                                                       title="5점">
+                                                <label class="rate_label"
+                                                       th:for="'rating'+${resStat.index*5+5}"></label>
+                                            </div>
+                                        </div>
+
+                                        <div style="display: flex; flex-direction: column;" class="reviewImgBox">
+                                            <input type="file" id="file" class="fileInput" name="file" accept="image/*" multiple style="display: none">
+
+                                            <label id="imgLabel" for="file">
+                                                <img src="/img/camera.png"
+                                                     style="width: 16px; height: 16px; margin-right: 5px">사진 첨부하기
+                                            </label>
+
+                                            <div style="margin: 20px 0">
+                                                <img style="width: 170px; height: 155px; background-size: cover; border-radius: 10px; margin-right: 5px"
+                                                     class="preview" alt="">
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <div>
+                                            <input th:if="${not #strings.isEmpty(res.res_no)}" th:value="${res.res_no}"
+                                                   name="resNo" th:hidden="true"/>
+                                            <input th:value="${res.getRestNo().restNo}" name="restNo" th:hidden="true"/>
+                                        </div>
+                                        <div style="margin-top: 30px">
+                                            <textarea id="reviewContent" name="revContent" rows="5" cols="82"
+                                                      style="resize: none;" placeholder="식당의 위생상태, 맛, 서비스 등 이용하신 경험에 대한 솔직한 리뷰를 남겨주세요. (선택, 200자 내외)" oninput="limitTextarea(this, 200)"></textarea>
+                                        </div>
+                                        <button id="revAdd" class="reviewAddBtn" type="submit" style="display: flex; justify-content: center; align-items: center; width: 112.5%;">
+                                            완료
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container1" th:if="${list == null or #lists.isEmpty(list)}">
+                    <div class="left">
+                    </div>
+                    <div class="right">
+                        <p class="gary-text p-right" style="color: gray;">
+                            <b style="font-size: 20px;">현재 이용 중인 가게가 없습니다.</b><br>
+                        <hr>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--    <div id="stopRemote" style="width: 1000px; margin-top: 100px"> 111 </div>-->
+
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+
+        function limitTextarea(element, maxLength) {
+            let text = element.value;
+            let currentChars = text.length;
+
+            if (currentChars > maxLength) {
+                element.value = text.slice(0, maxLength);
+            }
+        }
+
+
+
+        function reviewRateInput(reviewWriteBtn) {
+            var labels = reviewWriteBtn.closest('.containers').querySelectorAll('[class="rate_radio"]');
+
+            labels.forEach(function (label) {
+                label.addEventListener('click', function (event) {
+                    let ratingValue = $(this).val();
+                    let container = $(this).closest('.containers')
+                    let selectedRevScore = container.find('#selectedRevScore');
+                    let fillWidth = ratingValue * 5.9;
+
+                    selectedRevScore.val(fillWidth);
+
+                    container.find('.ratefillYellow').css('width', fillWidth + 'px');
+                })
+            });
+        };
+    </script>
+
+
+    <script>
+        var fileInputs = document.querySelectorAll('.fileInput');
+
+        fileInputs.forEach(function (input, index) {
+            var label = input.parentElement.querySelector('label');
+            var preview = input.parentElement.querySelector('.preview');
+
+            var currentId = 'file' + (index + 1);
+            input.id = currentId;
+            label.setAttribute('for', currentId);
+
+            input.addEventListener('change', function () {
+                let previews = this.parentElement.querySelectorAll('.preview');
+
+                if (this.files.length > 4) {
+                    alert("사진은 최대 4장까지 업로드 가능합니다.");
+                }
+
+                [...this.files].slice(0, 4).forEach((file, index) => {
+                    let preview = previews[index];
+
+                    if (!preview) {
+                        preview = previews[0].cloneNode(false);
+                        previews[0].parentNode.appendChild(preview);
+                    }
+
+                    let reader = new FileReader();
+                    reader.onload = function () {
+                        preview.src = reader.result;
+                    }
+                    reader.readAsDataURL(file);
+                });
+
+                previews.forEach((preview, index) => {
+                    if (0 === index && 0 === this.files.length)
+                        preview.removeAttribute('src');
+                    else if (index >= this.files.length)
+                        preview.remove();
+
+                });
+            });
+        });
+
+
+        document.getElementById("revAdd").addEventListener("click", function (event) {
+            event.preventDefault();
+            var confirmation = confirm("리뷰를 작성하시겠습니까?");
+            if (confirmation) {
+                document.getElementById("addRevForm").submit();
+            } else {
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var reviewBtns = document.querySelectorAll('.reviewBtn');
+            var reviewBtns2 = document.querySelectorAll('.reviewBtn2');
+
+            reviewBtns.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var confirmation = window.confirm('리뷰를 작성하시겠습니까?');
+
+                    if (confirmation) {
+                        let container1 = this.closest('.container1');
+                        var container2 = this.closest('.containers');
+
+                        if (container1) {
+                            container1.style.paddingBottom = '689px';
+
+                            let container1ById = document.getElementById('container1');
+                            console.log('container1ById:', container1ById);
+
+                            let reviewBtn = container1.querySelector('#reviewBtn');
+                            console.log('reviewBtn:', reviewBtn);
+                            if (reviewBtn) {
+                                reviewBtn.style.display = 'none';
+                            }
+
+                            let cancelBtn1 = container1.querySelector('#cancelBtn1');
+                            if (cancelBtn1) {
+                                cancelBtn1.style.display = 'none';
+                            }
+
+                            let reviewBtn2 = container1.querySelector('#reviewBtn2');
+                            if (reviewBtn2) {
+                                reviewBtn2.style.display = '';
+                            }
+                        }
+
+                        if (container2) {
+                            var delay = 400;
+
+                            setTimeout(function () {
+                                container2.classList.toggle('expanded');
+                                console.log('리뷰 작성 버튼이 눌렸습니다.');
+                                container2.scrollIntoView({ behavior: "smooth" });
+                            }, delay);
+                        }
+                    } else {
+                        console.log('리뷰 작성이 취소되었습니다.');
+                    }
+                    reviewRateInput(btn);
+                });
+            });
+            reviewBtns2.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var confirmation = window.confirm('리뷰를 작성을 취소하시겠습니까?');
+                    if (confirmation) {
+                        let container1 = this.closest('.container1');
+                        var container2 = this.closest('.containers');
+
+
+                        if (container1) {
+
+                            window.scrollTo({
+                                top: window.scrollY - 690,
+                                behavior: 'smooth'
+                            });
+
+                            container1.style.paddingBottom = '15px';
+
+                            let container1ById = document.getElementById('container1');
+                            console.log('container1ById:', container1ById);
+
+                            let reviewBtn = container1.querySelector('#reviewBtn');
+                            console.log('reviewBtn:', reviewBtn);
+                            if (reviewBtn) {
+                                reviewBtn.style.display = '';
+                            }
+
+                            let cancelBtn1 = container1.querySelector('#cancelBtn1');
+                            if (cancelBtn1) {
+                                cancelBtn1.style.display = '';
+                            }
+
+                            let reviewBtn2 = container1.querySelector('#reviewBtn2');
+                            if (reviewBtn2) {
+                                reviewBtn2.style.display = 'none';
+                            }
+
+
+                        }
+
+                        if (container2) {
+                            var delay = 100;
+
+                            setTimeout(function () {
+                                container2.classList.remove('expanded');
+                            }, delay);
+
+                        }
+                    } else {
+                    }
+                })
+            })
+        });
+
+        window.addEventListener('resize', function () {
+            var remoteElement = document.getElementById('remote');
+            var pageWidth = window.innerWidth;
+
+            if (pageWidth <= 1600) {
+                remoteElement.style.display = 'none';
+            } else {
+                remoteElement.style.display = 'block';
+            }
+        });
+
+        window.addEventListener('load', function () {
+            var remoteElement = document.getElementById('remote');
+            var pageWidth = window.innerWidth;
+
+            if (pageWidth <= 1600) {
+                remoteElement.style.display = 'none';
+            }
+        });
+
+    </script>
+    <script src="/js/imglazy.js"></script>
+</th:block>
+</html>

@@ -1,0 +1,445 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{userPage/Layout_userPage2}">
+
+<th:block th:fragment="content">
+
+    <style>
+        #infoSelect {
+            font-weight: bold;
+            color: black;
+            border-bottom: 2px solid black;
+        }
+
+        .userinfo_td_gap {
+            white-space: nowrap;
+            position: relative;
+            padding-bottom: 50px;
+            padding-left: 200px;
+        }
+
+        .userinfo_td_gapPw {
+            white-space: nowrap;
+            position: relative;
+            padding-bottom: 50px;
+            /*padding-left: 72px;*/
+        }
+
+        td {
+            font-size: 16px;
+            padding: 2px 5px;
+            color: #232323;
+            height: 35px;
+        }
+
+        .pwBtn {
+            background-color: #5c7191; /* 마우스 호버 시 배경색 변경 */
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .pwBtn:hover {
+            background-color: #4c87dc;
+        }
+
+        .pwBtn2 {
+            background-color: #845c91; /* 마우스 호버 시 배경색 변경 */
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .pwBtn2:hover {
+            background-color: #ca96de;
+        }
+
+        .col {
+            color: grey;
+            font-size: 80%;
+        }
+
+        .profileChane {
+            /*background-color: rgba(255, 163, 97, 0.72);*/
+            border: 1px solid grey;
+            color: #000000;
+            font-size: 13px;
+            padding: 7px 12px;
+            border-radius: 5px;
+            /*border: none;*/
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+
+        .pwChangeForm {
+            display: none;
+        }
+
+        .deleteUser {
+            display: none;
+        }
+
+        #deleteUserform2:hover{
+            cursor: pointer;
+        }
+    </style>
+
+    <div style="display: flex; justify-content: center; margin-top: -132px">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #FFFFFF; width: 1231px; height: auto; border-radius: 0px; padding: 2% ">
+
+            <div style="display: flex; flex-direction: row; align-items: flex-end;"
+                 class="reviewImgBox">
+                <input type="file" id="file" class="fileInput" name="file" accept="image/*" style="display: none">
+
+                <div style="margin: 20px 0">
+                    <img id="previewImage"
+                         style="width: 170px; height: 155px; background-size: cover; border-radius: 10px"
+                         class="preview" th:src="'data:image/png;base64,' + ${main_user.getBase64Image()}" alt="">
+                </div>
+
+                <label id="imgLabel1" for="file"
+                       style="cursor: pointer; margin-bottom: 20px; margin-left: 10px; display: block"
+                       onclick="showConfirmation()">
+                    <!--                    <img src="/img/camera.png" style="width: 16px; height: 16px; margin-right: 5px">프로필 사진 변경-->
+                    <span class="profileChane" id="profileChane1">
+                        <i class="fa-regular fa-address-card"></i> 프로필 변경
+                    </span>
+                </label>
+
+                <label id="imgLabel2" style="cursor: pointer; margin-bottom: 20px; margin-left: 10px; display: none"
+                       onclick="uploadImage()">
+                    <span class="profileChane" id="profileChane2">
+                        <i class="fa-regular fa-address-card"></i> 변경 완료!
+                    </span>
+                </label>
+
+                <label id="imgLabel3" style="cursor: pointer; margin-bottom: 20px; margin-left: 10px; display: none"
+                       onclick="CancelImage()">
+                    <span class="profileChane" id="profileChane3">
+                        <i class="fa-regular fa-address-card"></i> 변경 취소
+                    </span>
+                </label>
+
+
+            </div>
+            <table style="margin-left: -49px; margin-top: 28px">
+                <tbody>
+                <tr>
+                    <td class="userinfo_td_gap">
+                        <strong>
+                            <div th:if="${main_user.getProvider() == 'kakao'}">
+                                MY 정보   [[${main_user.getProvider()}]] <img src="/img/icon-kakao-logo-32.png" style="margin-bottom: 20px; width: 18px; height: 18px; border-radius: 50%;">
+                            </div>
+                            <div th:if="${main_user.getProvider() == 'google'}">
+                                MY 정보   [[${main_user.getProvider()}]] <img src="/img/icon-google-logo-32.png" style="margin-bottom: 20px; width: 18px; height: 18px; border-radius: 50%;">
+                            </div>
+                            <div th:if="${main_user.getProvider() == 'naver'}">
+                                MY 정보   [[${main_user.getProvider()}]] <img src="/img/icon-naver-logo-32.png" style="margin-bottom: 20px; width: 18px; height: 18px; border-radius: 50%;">
+                            </div>
+                            <div th:if="${main_user.getProvider() == null}">
+                                MY 정보
+                            </div>
+                        </strong>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="userinfo_td_gap">
+                        <strong><i class="fa-regular fa-id-card"></i> ID</strong>
+                    </td>
+                    <td th:text="${main_user.getUserId()}" class="userinfo_td_gap"></td>
+                </tr>
+                <tr>
+                    <td class="userinfo_td_gap">
+                        <strong> <i class="fa-solid fa-user"></i> 이름</strong>
+                    </td>
+                    <td th:text="${main_user.getUserName()}" class="userinfo_td_gap"></td>
+                </tr>
+                <tr>
+                    <td class="userinfo_td_gap">
+                        <strong> <i class="fa-regular fa-envelope"></i> 이메일</strong>
+                    </td>
+                    <td th:text="${main_user.getUserEmail()}" class="userinfo_td_gap"></td>
+                </tr>
+                <tr>
+                    <td class="userinfo_td_gap">
+                        <strong> <i class="fa-solid fa-lock"></i> 비밀번호</strong>
+                    </td>
+                    <td th:text="${hiddenPassword}" class="userinfo_td_gap"></td>
+                    <td class="userinfo_td_gap">
+                        <label th:if="${main_user.getProvider() == null}" class="pwBtn" id="pwBtn1" onclick="pwChange()"> <i class="fa-solid fa-key"></i>   변경하기</label>
+                        <label th:if="${main_user.getProvider() != null}" class="pwBtn" id="pwBtnNull" onclick="pwChangeNull()"> <i class="fa-solid fa-key"></i>   변경하기</label>
+                    </td>
+                </tr>
+                <tr class="pwChangeForm">
+                    <td class="userinfo_td_gap"></td>
+                    <td class="userinfo_td_gap"><strong> <i class="fa-solid fa-lock-open"></i>   현재 비밀번호 </strong></td>
+                    <td class="userinfo_td_gapPw"><input type="password" id="nowPw" size="30" placeholder="현재 비밀번호를 입력 해주세요."></td>
+                </tr>
+                <tr class="pwChangeForm">
+                    <td class="userinfo_td_gap"></td>
+                    <td class="userinfo_td_gap"><strong> <i class="fa-solid fa-unlock"></i>   새 비밀번호 </strong></td>
+                    <td class="userinfo_td_gapPw"><input type="password" id="changePw" size="30" placeholder="새로운 비밀번호를 입력 해주세요."></td>
+                </tr>
+                <tr class="pwChangeForm">
+                    <td class="userinfo_td_gap"></td>
+                    <td class="userinfo_td_gap"><strong> <i class="fa-solid fa-lock"></i>   새 비밀번호 확인 </strong></td>
+                    <td class="userinfo_td_gapPw"><input type="password" id="changePwCheck" size="30" placeholder="비밀번호를 한번 더 입력 해주세요."></td>
+                </tr>
+                <tr class="pwChangeForm">
+                    <td class="userinfo_td_gap"></td>
+                    <td class="userinfo_td_gap">
+                        <label class="pwBtn" id="pwBtn2" onclick="pwChangeUpdate()"> <i class="fa-solid fa-user-lock"></i>  변경하기</label>
+                        <label class="pwBtn2" id="pwBtnCancel" onclick="pwChangeCancel()"> <i class="fa-solid fa-circle-xmark"></i>   취소</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="userinfo_td_gap">
+                        <strong> <i class="fa-solid fa-mobile-screen-button"></i> 전화번호</strong>
+                    </td>
+                    <td th:text="${main_user.getUserTel().length() == 11 ?
+                #strings.substring(main_user.getUserTel(), 0, 3) + '-' +
+                #strings.substring(main_user.getUserTel(), 3, 7) + '-' +
+                #strings.substring(main_user.getUserTel(), 7) :
+                (main_user.getUserTel().length() == 10 ?
+                  #strings.substring(main_user.getUserTel(), 0, 3) + '-' +
+                  #strings.substring(main_user.getUserTel(), 3, 6) + '-' +
+                  #strings.substring(main_user.getUserTel(), 6) :
+                  main_user.getUserTel())}" class="userinfo_td_gap"></td>
+
+
+                </tr>
+                <tr>
+                    <td class="userinfo_td_gap col"> 예맛을 이용하고 싶지 않으신가요?</td>
+                    <td class="col" style="padding-bottom: 40px; padding-left: 186px;"><a class="nav-link" href="/logout">로그아웃</a></td>
+                    <td th:if="${main_user.getProvider() == null && main_user.getUserAuth() == 'USER'}" class="col" id="deleteUserform" style="padding-bottom: 40px;" onclick="deleteUser()"><span id="deleteUserform2">회원탈퇴</span></td>
+                    <td th:if="${main_user.getProvider() != null}" class="col" id="deleteUserform" style="padding-bottom: 40px; display: none"><span id="deleteUserform2">회원탈퇴</span></td>
+                    <td th:if="${main_user.getProvider() == null && main_user.getUserAuth() != 'USER'}" class="col" id="deleteUserform" style="padding-bottom: 40px;" onclick="deleteUserAuth()"><span id="deleteUserform2">회원탈퇴</span></td>
+                </tr>
+                <tr class="deleteUser">
+                    <td class="userinfo_td_gap"></td>
+                    <td class="userinfo_td_gap"><strong> <i class="fa-solid fa-lock-open"></i>   비밀번호 입력</strong></td>
+                    <td class="userinfo_td_gapPw"><input type="password" id="deleteUserInput" size="30" placeholder="비밀번호를 입력 해주세요."></td>
+                </tr>
+                <tr class="deleteUser">
+                    <td class="userinfo_td_gap"></td>
+                    <td class="userinfo_td_gap">
+                        <label class="pwBtn" id="deleteUserBtn" onclick="deleteUserUpdate()"> <i class="fa-solid fa-user-lock"></i>  탈퇴하기</label>
+                        <label class="pwBtn2" id="deleteUserBtnCancel" onclick="deleteUserUpdateCancel()"> <i class="fa-solid fa-circle-xmark"></i>   취소</label>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal" id="customModal" tabindex="-1" role="dialog" aria-labelledby="customModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    소셜계정의 회원은 비밀번호 변경이 불가능합니다.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        function deleteUser() {
+            var confirmation = confirm("정말로 회원탈퇴를 하시겠습니까?");
+            var deleteUser = document.querySelectorAll('.deleteUser');
+
+            if(confirmation){
+                deleteUser.forEach(function(form) {
+                    form.style.display = 'table-row';
+                });
+            }
+        }
+
+        function deleteUserAuth() {
+          alert("점주회원은 관리자에 폐점 신청 후 탈퇴가 가능합니다. 관리자에게 문의 하세요.");
+        }
+        function deleteUserUpdateCancel(){
+            var deleteUser = document.querySelectorAll('.deleteUser');
+
+            deleteUser.forEach(function(form) {
+                form.style.display = 'none';
+            });
+        }
+
+        function deleteUserUpdate(){
+            let deleteUserInput = document.getElementById('deleteUserInput').value;
+
+            $.ajax({
+                type: 'POST',
+                url: '/user/deleteUser',
+                data: { pw : deleteUserInput },
+                success: function () {
+                    alert('회원탈퇴가 완료되었습니다.');
+                    console.log('회원탈퇴 성공 :');
+                    location.reload(true);
+                },
+                error: function (error, data) {
+                    alert('비밀번호가 일치하지 않거나 탈퇴 중 오류가 발생했습니다.');
+                    console.error('탈퇴 실패 :', error);
+                    console.error('탈퇴 실패 :', data);
+                    console.error('탈퇴 실패 :', deleteUserInput);
+
+                }
+            });
+        }
+    </script>
+
+    <script th:inline="javascript">
+        function pwChangeUpdate() {
+            var enteredPassword = document.getElementById("nowPw").value;
+            var enteredPassword2 = document.getElementById("changePw").value;
+            var enteredPassword3 = document.getElementById("changePwCheck").value;
+
+            var actualPassword = /*[[ ${main_user.getUserPassword()} ]]*/'';
+
+                if (enteredPassword2 === enteredPassword3) {
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/user/updatePw',
+                        data: { newPassword: enteredPassword3, oldPw : enteredPassword }, // 전송할 데이터를 객체로 감싸고 필드명을 지정해주는 것이 좋습니다.
+                        success: function () {
+                            alert('비밀번호가 성공적으로 변경되었습니다.');
+                            console.log('비밀번호 변경 성공 :');
+                            location.reload(true);
+                        },
+                        error: function (error, data) {
+                            alert('현재 비밀번호가 일치하지않습니다.');
+                            console.error('비밀번호 변경 실패 :', error);
+                            console.error('비밀번호 변경 실패 :', data);
+                            console.error('비밀번호 변경 실패 :', enteredPassword3);
+
+                        }
+                    });
+                } else {
+                    alert("변경될 비밀번호가 서로 일치하지않습니다. 다시 확인 해주세요.");
+                }
+        }
+
+    </script>
+
+    <script>
+        function pwChange() {
+            var confirmation = confirm("비밀번호를 변경하시겠습니까?");
+            var pwChangeForms = document.querySelectorAll('.pwChangeForm');
+            let pwBtn1 = document.querySelector('#pwBtn1');
+
+            var deleteUser = document.querySelectorAll('.deleteUser');
+
+
+            if(confirmation){
+            pwChangeForms.forEach(function(form) {
+                form.style.display = 'table-row';
+            });
+            pwBtn1.style.display = 'none'
+            }
+
+
+            deleteUser.forEach(function(form) {
+                form.style.display = 'none';
+            });
+        }
+        function pwChangeNull() {
+            $('#customModal').modal('show');
+        }
+        function pwChangeCancel(){
+            var pwChangeForms = document.querySelectorAll('.pwChangeForm');
+            let pwBtn1 = document.querySelector('#pwBtn1');
+
+            pwChangeForms.forEach(function(form) {
+                form.style.display = 'none';
+            });
+            pwBtn1.style.display = 'block'
+        }
+
+        function showConfirmation() {
+            var confirmation = confirm("프로필 사진을 변경하시겠습니까?");
+            let imgLabel1 = document.getElementById('imgLabel1');
+            let imgLabel2 = document.getElementById('imgLabel2');
+            let imgLabel3 = document.getElementById('imgLabel3');
+
+            if (confirmation) {
+                document.getElementById('file').addEventListener('change', function (event) {
+                    var input = event.target;
+                    var reader = new FileReader();
+
+                    reader.onload = function () {
+                        var previewImage = document.getElementById('previewImage');
+                        previewImage.src = reader.result;
+                    };
+
+                    reader.readAsDataURL(input.files[0]);
+
+                    // 파일이 변경되면 스타일 변경
+                    document.getElementById('imgLabel1').style.display = "none";
+                    document.getElementById('imgLabel2').style.display = "block";
+                    document.getElementById('imgLabel3').style.display = "block";
+                });
+
+            } else {
+                document.getElementById('file').value = "";
+                imgLabel1.style.display = "block"
+                imgLabel2.style.display = "none"
+                imgLabel3.style.display = "none"
+                event.preventDefault();
+            }
+        }
+    </script>
+
+    <script>
+        function uploadImage() {
+            var confirmation = confirm("프로필 사진을 변경하시겠습니까?");
+            var fileInput = document.getElementById('file');
+            var file = fileInput.files[0];
+
+            if (confirmation) {
+                var formData = new FormData();
+                formData.append('file', file);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/user/uploadImg',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function () {
+                        alert('프로필이 성공적으로 변경되었습니다.');
+                        console.log('이미지 업로드 성공:');
+                        location.reload(true);
+                    },
+                    error: function (error) {
+                        console.error('이미지 업로드 실패:', error);
+                    }
+                });
+            } else {
+                location.reload(true);
+            }
+        }
+
+        function CancelImage(){
+            var confirmation = confirm("프로필 사진을 변경을 취소 하시겠습니까?");
+
+            if(confirmation){
+                location.reload();
+            }
+        }
+    </script>
+</th:block>
+</html>
+
+
+

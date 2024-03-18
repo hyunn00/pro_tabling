@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>홈 공지사항 목록</title>
+</head>
+
+
+<div th:fragment="managerContent">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .confirm-box {
+            border: 2px solid #ccc;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+
+        .confirm-box h2 {
+            margin-top: 0;
+        }
+
+        .confirm-box button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .confirm-box button:hover {
+            background-color: #45a049;
+        }
+
+        .confirm-box button.secondary {
+            background-color: #ccc;
+            margin-left: 10px;
+        }
+
+        .confirm-box button.secondary:hover {
+            background-color: #bbb;
+        }
+
+
+        /*고정 공지사항 관련*/
+
+        #noticeTable1 {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #noticeTable1 th,
+        #noticeTable1 td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+        }
+
+        #noticeTable1 th {
+            background-color: #f2f2f2;
+        }
+
+        #noticeTable1 tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #noticeTable1 tr:hover {
+            background-color: #dddddd;
+        }
+
+    </style>
+
+
+    <div id="right2" style="margin-right: 100px;">
+
+<!--        <h2 style="color: black; margin-bottom: 20px">주요 공지 사항</h2>-->
+
+        <div style="display: flex; justify-content: center;">
+
+            <table id="noticeTable1" style="text-align: center; width: 100%;">
+                <thead>
+                <tr>
+                    <th>고정</th>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성일</th>
+                </tr>
+
+                </thead>
+
+                <tbody>
+                <tr th:each="list, listIndex : ${head}">
+<!--                    th:onclick="'javascript:redirectToNoticeDetail(\'' + ${list.id} + '\')'">-->
+                    <td>
+                        <form id="myForm1" action="/manager/managerPage_NoticeHead" method="POST">
+                            <input type="hidden" id="myInput1" name="id" th:value="${list.id}">
+                            <input type="hidden" name="head" value="false">
+                            <input type="checkbox" id="myCheckbox1" th:checked="${list.importantNotice}"
+                                   onchange="submitForm1(this)">
+                        </form>
+                    </td>
+
+                    <td th:text="${list.id}" th:onclick="'javascript:redirectToNoticeDetail(\'' + ${list.id} + '\')'"></td>
+                    <td th:text="${list.subject}" th:onclick="'javascript:redirectToNoticeDetail(\'' + ${list.id} + '\')'"></td>
+                    <td th:text="${#strings.substring(list.writeDate, 0, 10)}" th:onclick="'javascript:redirectToNoticeDetail(\'' + ${list.id} + '\')'"></td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+
+
+        <table id="noticeTable2" style="text-align: center;">
+            <thead>
+            <tr>
+                <th>고정</th>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="list, listIndex : ${list}">
+<!--                th:onclick="'javascript:redirectToNoticeDetail(\'' + ${list.id} + '\')'">-->
+
+                <td>
+                    <form id="myForm2" action="/manager/managerPage_NoticeHead" method="POST">
+                        <input type="hidden" id="myInput2" name="id" th:value="${list.id}">
+                        <input type="hidden" name="head" value="false">
+                        <input type="checkbox" id="myCheckbox2" th:checked="${list.importantNotice}"
+                               onchange="submitForm2(this)">
+                    </form>
+                </td>
+
+                <td th:text="${list.id}"  th:onclick="'javascript:redirectToNoticeDetail(\'' + ${list.id} + '\')'"></td>
+                <td th:text="${list.subject}"  th:onclick="'javascript:redirectToNoticeDetail(\'' + ${list.id} + '\')'"></td>
+                <!--                    <td th:text="${list.writer}"></td>-->
+                <td th:text="${#strings.substring(list.writeDate, 0, 10)}" th:onclick="'javascript:redirectToNoticeDetail(\'' + ${list.id} + '\')'"></td>
+
+            </tr>
+            </tbody>
+        </table>
+
+
+        <div th:if="${!list.isEmpty()}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!list.hasPrevious} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{|?page=${list.number-1 < 0 ? 0 : list.number-1}|}">
+                        <span>이전</span>
+                    </a>
+                </li>
+                <li th:each="page: ${#numbers.sequence(0, list.totalPages-1)}"
+                    th:if="${page >= list.number-5 and page <= list.number+5}"
+                    th:classappend="${page == list.number} ? 'active'"
+                    class="page-item">
+                    <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+                </li>
+                <li class="page-item" th:classappend="${!list.hasNext} ? 'disabled'">
+                    <a class="page-link" th:href="@{|?page=${list.number+1}|}">
+                        <span>다음</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+
+        // function searchDinning4() {
+        //     let searchInput4 = document.getElementById("searchInput4").value;
+        //     fetch("/manager/managerPage_Notice?searchInput4=" + encodeURIComponent(searchInput4))
+        //         .then(resp => resp.text())
+        //         .then(data => {
+        //             let doc = new DOMParser().parseFromString(data, 'text/html');
+        //             document.getElementById("noticeTable").innerHTML = doc.getElementById("noticeTable").innerHTML;
+        //             document.querySelector(".pagination").innerHTML = doc.querySelector(".pagination").innerHTML;
+        //         });
+        // }
+
+        function submitForm1(checkbox) {
+            Swal.fire({
+                title: '고정 해제 하시겠습니까?',
+                text:'해제하시려면 확인을 눌러주세요',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '확인',
+                cancelButtonText: '취소'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire("Success!", "해제 되었습니다.", "success")
+                        .then(function (){
+                            let form = checkbox.form;
+                            let confirmInput = form.querySelector("input[name=head]");
+                            confirmInput.value = "false";
+                            form.submit();
+                        })
+                }else{
+                    Swal.fire("취소 되었습니다.")
+                }
+            });
+        }
+
+        function submitForm2(checkbox) {
+            Swal.fire({
+                title: '상단에 고정하시겠습니까?',
+                text: '추가하시려면 확인을 눌러주세요',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '확인',
+                cancelButtonText: '취소'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire("Success!", "고정 되었습니다.", "success")
+                        .then(function (){
+                            let form = checkbox.form;
+                            let confirmInput = form.querySelector("input[name=head]");
+                            confirmInput.value = "true";
+                            form.submit();
+                        })
+                }else{
+                    Swal.fire("취소 되었습니다.")
+                }
+            });
+        }
+
+        function redirectToNoticeDetail(id) {
+            window.location.href = '/manager/managerPage_NoticeDetail?id=' + id;
+        }
+    </script>
+</div>
+</html>

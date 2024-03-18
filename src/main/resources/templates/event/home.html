@@ -1,0 +1,15 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/" lang="ko">
+<head>
+    <title th:include="~{/include/header::titleFragment}">title</title>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/eventPage.css}" rel="stylesheet">
+</head>
+<body>
+
+<header  th:include="~{/include/header::headerFragment}"></header>
+<div id="eventDetailContentBox" th:include="~{/event/eventContent::detailContent}"></div>
+<footer th:include="~{/include/footer.html}"></footer>
+
+</body>
+</html>

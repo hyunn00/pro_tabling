@@ -1,0 +1,59 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<th:block th:fragment="headerDropMenuFragment">
+    <div>
+        <th:block th:if="${user=='null'}">
+            <ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">로그인</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/signUp">회원가입</a>
+                </li>
+            </ul>
+        </th:block>
+        <th:block th:unless="${user=='null'}" th:switch="${user}">
+            <div class="myinfo">
+                <img id="userimg" src="/images/logo_avatar_32dp.png" alt="avatar">
+                <p class="nav-item">안녕하세요, [[${user_name}]]님.</p>
+            </div>
+            <ul>
+                <th:block th:case="USER">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/user_posts">마이페이지</a>
+                    </li>
+                </th:block>
+                <th:block th:case="OWNER">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/user_posts">마이페이지</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/owner/home">가게관리</a>
+                    </li>
+                </th:block>
+                <th:block th:case="ADMIN">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/user_posts">마이페이지</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/owner/home">가게관리</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manager/content">관리자페이지</a>
+                    </li>
+                </th:block>
+                <th:block th:default>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">로그아웃</a>
+                    </li>
+                </th:block>
+            </ul>
+        </th:block>
+    </div>
+    <th:block th:if="${user_img!=null&&user_img!=''}">
+        <script th:inline="javascript">
+            document.getElementById("avatar").src = 'data:image/jpeg;base64,' + [[${user_img}]];
+            document.getElementById("userimg").src = 'data:image/jpeg;base64,' + [[${user_img}]];
+        </script>
+    </th:block>
+</th:block>
+</html>

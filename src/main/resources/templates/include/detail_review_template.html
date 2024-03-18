@@ -1,0 +1,172 @@
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="ko">-->
+<!--<th:block th:fragment="detailReviewTemplate(list, bSlide)">-->
+
+<!--    <div class="reviewT" th:each="review : ${list}">-->
+<!--        &lt;!&ndash;/*[+    <span th:text="${review.id}"></span> +]*/&ndash;&gt;-->
+<!--        <p class="username" th:text="${review.userNo.userName}"></p>-->
+<!--        <p class="star" th:text="${review.getRevScore()}"></p>-->
+<!--        <p class="username" th:text="${review.revWriteTime}"></p>-->
+<!--        <p th:text="${review.restNo.restName}"></p>-->
+<!--        <p th:text="${review.restNo.restCategory}"></p>-->
+<!--        <p class="comment" th:text="${review.revContent}"></p>-->
+<!--        <img th:if="${review.base64Image!=''}" th:src="'data:image/png;base64,' + ${review.base64Image}" alt="리뷰 이미지"/>-->
+<!--        <div class="overtip" th:if="${bSlide}==1">-->
+<!--            <span th:text="${review.restNo.restName}"></span>-->
+<!--            <span th:text="${review.restNo.restCategory}"></span>-->
+<!--            <hr>-->
+<!--            <span><a th:href="'/detail?restNo='+${review.restNo.restNo}">식당바로가기</a></span>-->
+<!--            <span th:onclick="|addWishList(this,${review.restNo.restNo})|">관심등록>></span>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</th:block>-->
+<!--</html>-->
+
+
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<th:block th:fragment="detailReviewTemplate(list, bSlide)">
+
+    <style>
+        .rating .rate_radio {
+
+            display: none;
+
+        }
+
+        .rating .rate_radio + label {
+            /*border: 0.5px solid gray;*/
+            position: relative;
+            display: block;
+            float: left;
+            z-index: 10;
+            width: 16px;
+            height: 17px;
+            background-image: url("/img/starrate.png");
+            background-repeat: no-repeat;
+            background-size: 16px 17px;
+            /*cursor: pointer;*/
+        }
+
+        .ratefillYellow {
+            background-color: #e9e93c;
+            height: 17px;
+            position: absolute;
+            transition: width 0.3s; /* 너비가 변경될 때 애니메이션을 추가합니다. */
+            z-index: 2;
+            animation: slideInFromLeft 0.5s ease-in-out;
+        }
+
+
+        .ratefillGray {
+            position: absolute;
+            background-color: #808080ad;
+            height: 17px;
+            width: 80px;
+            z-index: 1;
+        }
+
+        .rating li {
+            list-style: none;
+        }
+
+    </style>
+
+    <!--    ${review.revStatus}-->
+    <div class="reviewT" th:each="review : ${list}">
+        <!--/*[+    <span th:text="${review.id}"></span> +]*/-->
+        <p class="username" th:text="${review.userNo.userName}"></p>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+
+                <div class="startD" style="display: flex">
+
+                    <li style="font-size: 12px" class="rating">
+                        <div class="ratefillGray"></div>
+                        <div class="ratefillYellow"
+                             th:style="'width: ' + ${review.getRevScore()* 16} + 'px'"></div>
+                        <input type="radio" name="revScore" id="rating1" value="100" class="rate_radio"
+                               title="1점">
+                        <label for="rating1"></label>
+                        <input type="radio" name="revScore" id="rating2" value="200" class="rate_radio"
+                               title="2점">
+                        <label for="rating2"></label>
+                        <input type="radio" name="revScore" id="rating3" value="300" class="rate_radio"
+                               title="3점">
+                        <label for="rating3"></label>
+                        <input type="radio" name="revScore" id="rating4" value="400" class="rate_radio"
+                               title="4점">
+                        <label for="rating4"></label>
+                        <input type="radio" name="revScore" id="rating5" value="500" class="rate_radio"
+                               title="5점">
+                        <label for="rating5"></label>
+                        <input type="hidden" id="selectedRevScore" name="selectedRevScore" value="">
+                    </li>
+                </div>
+
+                <!--                <p class="star" th:text="${review.getRevScore()}"></p>-->
+
+            </div>
+            <div>
+                <p class="username"
+                   th:text="${#strings.substring(review.revWriteTime, 0, 10)} +' '+ ${#strings.substring(review.revWriteTime, 11, 16)}"></p>
+<!--                <p th:text="${review.revStatus}"></p>-->
+            </div>
+        </div>
+        <hr>
+
+
+        <div th:if="(${review.revStatus} != 'NORMAL')" style="filter: blur(5px);">
+
+            <div style="justify-content: space-between; align-items: center; margin-top: 10px">
+                <div style="overflow: hidden;">
+                    <!--                <textarea cols="67" rows="6" readonly  class="comment" th:text="${review.revContent}"></textarea>-->
+                    <p class="comment" th:text="${review.revContent}"></p>
+                </div>
+                <div>
+                    <th:block th:with="condition=${review.getRevStrImg()!=''}, strArray=${review.getRevStrImg()}">
+                        <th:block th:if="${condition}">
+                            <th:block th:each="item : ${#strings.arraySplit(strArray, ',')}">
+                                <img th:attr="mysrc=${item}" alt="리뷰 이미지">
+                            </th:block>
+                        </th:block>
+                        <th:block th:unless="${condition}">
+                            <img th:if="${review.base64Image!=''}"
+                                 th:src="'data:image/png;base64,' + ${review.base64Image}"
+                                 alt="리뷰 이미지"/>
+                        </th:block>
+                    </th:block>
+                </div>
+            </div>
+
+        </div>
+
+        <div th:if="${review.revStatus == 'NORMAL'}">
+            <div style="justify-content: space-between; align-items: center; margin-top: 10px">
+                <div style="overflow: hidden;">
+                    <!--                <textarea cols="67" rows="6" readonly  class="comment" th:text="${review.revContent}"></textarea>-->
+                    <p class="comment" th:text="${review.revContent}"></p>
+                </div>
+                <div>
+                    <th:block th:with="condition=${review.getRevStrImg()!=''}, strArray=${review.getRevStrImg()}">
+                        <th:block th:if="${condition}">
+                            <th:block th:each="item : ${#strings.arraySplit(strArray, ',')}">
+                                <img th:attr="mysrc=${item}" alt="리뷰 이미지">
+                            </th:block>
+                        </th:block>
+                        <th:block th:unless="${condition}">
+                            <img th:if="${review.base64Image!=''}"
+                                 th:src="'data:image/png;base64,' + ${review.base64Image}"
+                                 alt="리뷰 이미지"/>
+                        </th:block>
+                    </th:block>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <script>
+
+    </script>
+</th:block>
+</html>

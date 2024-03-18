@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:include="~{/include/header::titleFragment}">title</title>
+    <link th:href="@{/css/formdiv.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/policy.css}" rel="stylesheet">
+</head>
+<body>
+<header  th:include="~{/include/header::headerFragment}"></header>
+
+<div id="content-container" th:include="~{${page}::content}"></div>
+
+<footer th:include="~{/include/footer.html}"></footer>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>아이디 찾기</title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+
+    #mail_input, #mail_number {
+        margin: 20px auto 5px auto;
+        width: 300px;
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+
+    #mail_number {
+        margin: 5px auto;
+        width: 300px;
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #mail_input p, #mail_number p {
+        margin-bottom: 10px;
+    }
+
+    input[type="text"], button {
+        padding: 8px;
+        margin-bottom: 10px;
+        width: calc(100% - 16px);
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    input[type="email"], button {
+        padding: 8px;
+        margin-bottom: 10px;
+        width: calc(100% - 16px);
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<body>
+
+<h2>아이디 찾기</h2>
+
+<div id="mail_input" name="mail_input">
+    <p>메일을 입력해주세요.</p>
+    <input type="email" name="mail" id="mail" placeholder="이메일 입력">
+    <button type="button" id="sendBtn" name="sendBtn" onclick="sendNumber()">인증번호</button>
+    <p id="msg" style="display: none;">인증번호 발송에 시간이 소요되고 있습니다. 잠시만 기다려 주십시오.</p>
+</div>
+<br>
+<div id="mail_number" name="mail_number" style="display: none">
+    <p>인증번호를 입력해주세요.</p>
+    <input type="text" name="number" id="number" placeholder="인증번호 입력">
+    <button type="button" name="confirmBtn" id="confirmBtn" onclick="confirmNumber()">이메일 인증</button>
+</div>
+<br>
+<input type="text" id="Confirm" name="Confirm" style="display: none" value="">
+
+
+
+<script type="text/javascript">
+    function sendNumber(){
+
+        let email = $("#mail").val();
+
+        // 이메일 형식 유효성 검사
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!email || !emailPattern.test(email)) {
+            alert("올바른 이메일 주소를 입력하세요.");
+            return;
+        }
+
+        document.getElementById("msg").style.display="block";
+
+        $.ajax({
+            url: "/emailToId",
+            type: "post",
+            dataType: "text",
+            data: { "mail": $("#mail").val() },
+            success: function(response) {
+                if (response === "findId") {
+                    alert("존재하지 않는 이메일입니다.");
+                    alert("다시 입력해 주세요.");
+                    window.location.href = "/findId";
+                } else {
+                    document.getElementById("msg").style.display="none";
+                    alert("인증번호가 발송되었습니다.");
+                    $("#Confirm").val(response);
+                    $("#mail_number").css("display", "block");
+                }
+            }
+        });
+    }
+
+    function confirmNumber(){
+        let number1 = $("#number").val();
+        let number2 = $("#Confirm").val();
+
+        if(number1 === number2){
+
+            alert("메일에서 아이디를 확인하세요.")
+            // alert("아이디는 " + [[${userId}]] + " 입니다")
+            window.close();
+
+            $.ajax({
+                url: "/sendEmail",
+                type: "post",
+                dataType: "text",
+                data: { "mail": $("#mail").val() },
+                success: function(response) {
+                    if (response === "findId") {
+
+                    }
+                }
+            });
+
+
+        }else{
+            alert("번호가 다릅니다.");
+        }
+    }
+
+    window.onkeyup = function(e) {
+        let key = e.keyCode ? e.keyCode : e.which;
+
+        if(key == 27) {
+            window.close();
+        }
+    }
+
+</script>
+
+</body>
+</html>

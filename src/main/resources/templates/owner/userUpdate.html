@@ -1,0 +1,116 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{owner/myPage_layout}">
+
+<th:block th:fragment="content">
+    <th:block th:object="${user}">
+        <div class="formDiv">
+        <form id="updateUserForm" th:action="@{/owner/userUpdate}" method="post" enctype="multipart/form-data">
+            <p><label>아이디</label><input type="text" name="userId" th:value="*{getUserId()}" readonly></p>
+            <p><label></label><label>아이디는 변경 불가능 합니다.</label></p>
+            <p><label>이름</label><input type="text" name="userName" th:value="*{getUserName()}"></p>
+            <p><label>비밀번호</label><input type="password"  value="********" readonly></p>
+            <p id="disnone"><label></label><input type="button" value="변경하기"
+                                                  onclick="document.getElementById('pwChange').style.display='block'; document.getElementById('disnone').style.display='none';"
+                                                  style="border:none;background-color: #222;cursor: pointer;color: #fff;height: 40px;border-radius: 5px;" ></p>
+            <div id="pwChange" style="display: none;">
+                <p><label></label><input type="password" name="oldPw" id="oldPw" placeholder="현재 사용중인 비밀번호를 입력해주세요"></p>
+                <p><label></label><input type="password" name="userPassword" id="newPw" placeholder="변경하고자 하는 비밀번호를 입력해주세요"></p>
+                <p><label></label><input type="password" id="newPw2" placeholder="변경하고자 하는 비밀번호를 다시 한번 더 입력해주세요"></p>
+<!--                <p><label></label><input type="button" value="변경" onclick="checkPw()"></p>-->
+                <p><label></label><input type="button" value="취소"
+                                         onclick="document.getElementById('pwChange').style.display='none';document.getElementById('disnone').style.display='block';"
+                                         style="border:none;background-color: #222;cursor: pointer;color: #fff;height: 40px;border-radius: 5px;"></p>
+            </div>
+            <p><label>이메일</label><input type="email" name="userEmail" th:value="*{getUserEmail()}" readonly></p>
+            <p><label></label>
+                <input type="button" onclick="openPopup()" value="이메일 재인증"
+                       style="border:none;background-color: #222;cursor: pointer;color: #fff;height: 40px;border-radius: 5px;" ></p>
+            <p><label>전화번호</label><input type="tel" name="userTel" th:value="*{getUserTel()}"></p>
+            <p><label>프로필 사진</label><input type="file" name="file" id="file" accept="image/*"></p>
+            <p><label></label><input type="button" onclick="changeOrigin()" value="사진 변경 취소" ></p>
+            <script th:inline="javascript">
+
+                function changeOrigin() {
+                    if( [[*{getBase64Image()}]] ) {
+                        document.getElementById('preview').setAttribute( 'src', 'data:image/jpeg;base64,' +[[*{getBase64Image()}]] );
+                    } else {
+                        document.getElementById('preview').src = '/img/no_image.png';
+                    }
+                }
+            </script>
+            <p><label id="last"></label><img id="preview" th:if="*{getUserImg() != null}"
+                                             th:src="'data:image/jpeg;base64,' + *{getBase64Image()}"></p>
+            <input type="hidden" th:value="*{getUserNo()}" name="userNo">
+            <input type="hidden" th:value="*{getUserAuth()}" name="userAuth">
+            <input type="button" value="수정" onclick="submitUserForm()">
+            <input type="button" value="취소" th:onclick="|location.href='@{/owner/userInfo}'|">
+        </form>
+        </div>
+    </th:block>
+    <script >
+        let preview = document.getElementById('preview');
+        if(!preview) {
+            var lastLabel = document.getElementById('last');
+            var img = document.createElement('img');
+            img.id = 'preview';
+            img.alt = '가게 사진';
+            img.src = '/img/no_image.png';
+
+            lastLabel.parentNode.insertBefore(img, lastLabel.nextSibling);
+        }
+
+        //이메일 인증 팝업
+        function openPopup() {
+            // 화면의 가운데 위치 계산
+            var leftPosition = (window.screen.width / 2) - (400 / 2);
+            var topPosition = (window.screen.height / 2) - (300 / 2);
+
+            // 팝업 창 열기
+            window.open('/CheckMail', '인증 팝업', 'width=600,height=500,left=' + leftPosition + ',top=' + topPosition);
+        }
+
+        function submitUserForm() {
+            if(confirm("수정하시겠습니까?")) {
+                let changePw = document.getElementById('pwChange').style.display !== 'none';
+
+                if(changePw === true) {
+                    let newPw = document.getElementById('newPw').value;
+                    let newPw2 = document.getElementById('newPw2').value;
+
+                    if(newPw === newPw2) {
+                        let form = document.getElementById("updateUserForm");
+                        form.submit();
+                    } else {
+                        alert("변경하고자 하는 비밀번호가 일치하지 않습니다.\n다시 입력 해주시길 바랍니다.")
+
+                    }
+                } else {
+                    changePw=false;
+                    let form = document.getElementById("updateUserForm");
+                    form.submit();
+                }
+
+            }
+        }
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    document.getElementById('preview').setAttribute('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        document.getElementById('file').addEventListener('change', function () {
+            previewImage(this);
+        });
+    </script>
+</th:block>
+
+</html>

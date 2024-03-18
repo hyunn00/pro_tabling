@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{owner/myPage_layout}">
+
+<th:block th:fragment="content">
+    <div class="blockDiv">
+        <table>
+            <tr>
+                <th>상태</th>
+                <th>제목</th>
+                <th>이벤트 시작일</th>
+                <th>이벤트 마감일</th>
+                <th>이벤트 작성일</th>
+            </tr>
+            <th:block th:each="event : ${eventList}" th:object="${event}">
+
+                <tr class="eventItem">
+                    <td class="status"></td>
+                    <td><a th:href="@{/owner/viewEvent/{eventNo}(eventNo=*{getEventNo()})}">[[*{getEventTitle()}]]</a></td>
+                    <td class="eventStartTime">[[*{getEventStartTime()}]]</td>
+                    <td class="eventEndTime">[[*{getEventEndTime()}]]</td>
+                    <td>[[*{#temporals.format(getWriteDate(), 'yyyy-MM-dd')}]]</td>
+                </tr>
+            </th:block>
+        </table>
+        <th:block th:if="${eventList.size() == 0}" >
+            <div style="width:100%; text-align: center; margin : 50px 0;">
+                <h3>죄송합니다.</h3>
+                <p>아직 등록된 이벤트가 없습니다.</p>
+            </div>
+        </th:block>
+    </div>
+    <script>
+        function setStatus(eventElement) {
+            let startTime = new Date(eventElement.querySelector(".eventStartTime").textContent);
+            let endTime = new Date(eventElement.querySelector(".eventEndTime").textContent);
+
+            let today = new Date();
+            let statusElement = eventElement.querySelector(".status");
+
+            if (today < startTime) {
+                statusElement.textContent = "예정";
+            } else if (startTime <= today && today <= endTime) {
+                statusElement.textContent = "진행중";
+            } else {
+                statusElement.textContent = "마감";
+            }
+        }
+
+        document.querySelectorAll(".eventItem").forEach(function(eventElement) {
+            setStatus(eventElement);
+        });
+    </script>
+</th:block>
+</html>

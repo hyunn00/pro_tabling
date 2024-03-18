@@ -1,0 +1,308 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<title th:fragment="titleFragment">맛집 예약, 예맛!</title>
+
+<div th:fragment="headerFragment" id="top">
+    <style>
+        #navbarNav {
+            width: 400px;
+            display: flex;
+            justify-content: flex-end;
+            flex-grow: 1;
+        }
+
+        #navbarNav button {
+            background: transparent;
+            box-shadow: none;
+            text-transform: none;
+            border: none;
+        }
+
+        #navbarNav .dropmenu.visible {
+            display: inline-block;
+            transition: all 0.4s ease-out 0s;
+            transform: scale(1);
+            /*opacity: 1;*/
+        }
+
+        #navbarNav .dropmenu ul, #navbarNav .dropmenu li {
+            list-style-type: none;
+            text-align: center;
+        }
+
+        #navbarNav .dropmenu li:hover {
+            background-color: #ffd9885c;
+        }
+
+        #navbarNav #mymenu {
+            width: 300px;
+            text-align: center;
+        }
+
+        #navbarNav #mymenu .myinfo {
+            margin: 10px 0;
+            padding: 10px 0;
+            background-color: rgba(128, 128, 0, 0.35);
+            border-radius: 2rem;
+        }
+
+        #navbarNav #mymenu .myinfo img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        #navbarNav #mymenu .myinfo p {
+            text-align: center;
+        }
+
+        #navbarNav #mymenu > ul {
+            padding-inline-start: 0;
+        }
+
+        #navbarNav #mymenu > ul li {
+            background-color: #ffd9885c;
+            border-radius: 2rem;
+            margin: 10px 0;
+
+            &:hover {
+                box-shadow: 0 0 0 5px rgba(255, 217, 136, 0.65);
+            }
+        }
+
+        #navbarNav .searchBox {
+            position: relative;
+            height: 100%;
+        }
+
+        #navbarNav .searchBox.kBXqGy {
+            /*background-color: rgb(255 255 255 / 50%);*/
+        }
+
+
+
+    </style>
+
+    <script>
+        function sendSearchQuery() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/search?'+getSearchWord(), true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let doc = new DOMParser().parseFromString(xhr.responseText, 'text/html');
+                    let div = document.querySelector('ul#resultList');
+                    if ( !div ) return;
+                    div.innerHTML = doc.querySelector('ul#resultList').innerHTML;
+                    let scriptTags = doc.querySelectorAll('script');
+                    let runnableScript = [];
+                    scriptTags.forEach(scriptTag => {
+                        if (null === scriptTag.getAttribute("map"))
+                            return;
+                        // eval(scriptTag.textContent);
+                        runnableScript.push( scriptTag.textContent );
+                    });
+                    eval( runnableScript.join( '' ) );
+                    var script = Object.assign(document.createElement('script'), { type: 'text/javascript', src: "/js/imglazy.js" });
+                    document.head.appendChild(script);
+                }
+            };
+            xhr.send();
+        }
+    </script>
+    <div>
+        <nav class="navbar navbar-expand-lg navbar-light" >
+            <div th:replace="~{/include/logo::logoContent(30,1)}"></div>
+
+            <form th:action="@{/search}" method="get">
+                <input id="searchBar" type="search" placeholder="음식 또는 식당명 입력" aria-label="Search" name="keyword" oninput=sendSearchQuery() th:value="${param.keyword}">
+            </form>
+            <div id="navbarNav">
+
+                <div style="display: flex; align-items: center; margin: 0 10px">
+                    <div style="margin-right: 5px;">
+                        <a href="https://www.weather.go.kr/w/weather/forecast/short-term.do?stnId=143#">
+                            <img class="icon" style="width: 45px; height: 45px;" onclick="toggleModal()">
+                        </a>
+                    </div>
+                    <div>
+                        <div class="temperature"></div>
+                    </div>
+                </div>
+
+
+                <button class="alarm-button noCon" onclick="onAlarmClick()">
+                    <img src="/images/ch-logo-white-32.png" alt="alarm1">
+                    <p style="display: none;">1</p>
+                </button>
+                <div>
+                    <div style="
+                         transform-origin: right top;
+                         right: 64px;
+                         top: 62px;
+                         background-color: #f7f7f7;
+                         max-height: 865px;
+                         "
+                         class="chats dropmenu" name="chat">
+                        <div th:include="~{/chat/chatroom::chatFragment}"></div>
+                    </div>
+                </div>
+
+
+                <button onclick="onMenuClick()" onblur="handleBlur()">
+                    <img id="avatar" src="/images/logo_avatar_32dp.png" alt="avatar"
+                         style="width:32px; height:32px; border-radius: 50%; object-fit: cover;">
+                </button>
+                <div>
+                    <div style="
+                         transform-origin: right top;
+                         right: 16px;
+                         top: 62px;
+                         background-color: #ffffff;
+                         max-height: 865px;
+                         "
+                         class="dropmenu" name="mymenu" id="mymenu">
+                        <!--/*[+ 이 안의 내용은 fetch("/api/loadMyMenu") header_dropmenu.html 으로 채워집니다 +]*/-->
+                    </div>
+                </div>
+
+
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        function onAlarmClick(btn) {
+            // document.querySelector("[name=chat]").classList.toggle("visible");
+            document.dispatchEvent( new Event("chatAlarmButtonClick") );
+        }
+
+        function onMenuClick(btn) {
+            document.querySelector("[name=mymenu]").classList.toggle("visible");
+            document.querySelector("[name=mymenu]").style.opacity = 1;
+        }
+        async function handleBlur() {
+            await sleep(200)
+            document.querySelector("[name=mymenu]").classList.remove("visible");
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function getSearchWord() {
+            const keyword = document.getElementById('searchBar').value;
+
+            const filterString = Array.from(document.querySelectorAll("ul[class^='filter']")).map(item =>
+                item.className + "=" + Array.from(item.querySelectorAll(".picked")).map(e => e.value).join(",")
+            ).join("&");
+
+            return 'keyword=' + encodeURIComponent(keyword) + "&" + filterString;
+        }
+
+        function toggleSearchForm() {
+            return;
+            var form = document.getElementById("searchBar");
+            if (form.style.display === "none") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none";
+            }
+        }
+
+        function handleFocusIn(bAdd) {
+            document.querySelector("#searchBar").classList.toggle("kBXqGy", bAdd);
+            document.querySelectorAll("#searchBar div").forEach(e => e.classList.toggle("kBXqGy", bAdd));
+            // document.querySelector("#searchBar div:nth-of-type(2)").style.display = bAdd ? "block" : "none";
+        }
+
+        function handleSearchItemClick(event) {
+            if ("LI" !== event.target.tagName)
+                return;
+            document.querySelector("#searchBar").value = event.target.textContent;
+            document.querySelector("form").submit();
+        }
+
+        document.addEventListener("click", (event) => {
+
+            const bSearchFocus = !!event.target.closest("#searchBar");
+            handleFocusIn(bSearchFocus);
+        });
+
+        (function () {
+            fetch("/api/loadMyMenu")
+                .then(resp => resp.text())
+                .then(data => {
+                    if (data) {
+                        let doc = new DOMParser().parseFromString(data, 'text/html');
+                        document.querySelector("[name=mymenu]").innerHTML = doc.querySelector("div").innerHTML;
+                        eval(doc.querySelector('script')?.textContent);
+                    }
+                });
+        })();
+
+        // 날씨 관련
+        // const button = document.querySelector('.button');
+        //
+        // document.addEventListener('click', () => {
+        //     navigator.geolocation.getCurrentPosition(success);
+        // });
+
+        const API_KEY = '30daaa26c215673ed477b33a05426ac5';
+
+        const tempSection = document.querySelector('.temperature');
+        // const placeSection = document.querySelector('.place');
+        // const descSection = document.querySelector('.description');
+        const iconSection = document.querySelector('.icon');
+
+        const success = (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            getWeather(latitude, longitude);
+        };
+        const noPosition = (position) => {
+            getWeather(35.86868025887658, 128.5987419727357);
+        }
+
+        const getWeather = (lat, lon) => {
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=kr`)
+                .then((response) => response.json())
+                .then((json) => {
+                    const temperature = json.main.temp + "°C";
+                    // let value = temperature + "";
+                    // const place = json.name;
+                    // const description = json.weather[0].description;
+                    const icon = json.weather[0].icon;
+                    const iconURL = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+
+                    tempSection.innerText = temperature;
+                    // placeSection.innerText = place;
+                    // descSection.innerText = description;
+                    iconSection.setAttribute('src', iconURL);
+                })
+            // .catch((error) => {
+            //     alert(error);
+            // });
+            // 위 catch 코드 주석을 풀면 계속 경고창이 나옴,,
+        }
+        navigator.geolocation.getCurrentPosition(success, noPosition);
+
+
+        // window.addEventListener('scroll', function() {
+        //     var header = document.getElementById('allHeader');
+        //     var scrollPosition = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+        //
+        //     // 내려간 스크롤의 양을 조절하여 배경색을 변경
+        //     if (scrollPosition > 100) { // 내려간 스크롤이 100px 이상일 때
+        //         header.style.backgroundColor = 'gray'; // 배경색 변경
+        //     } else {
+        //         header.style.backgroundColor = 'white'; // 다시 투명하게
+        //     }
+        // });
+
+    </script>
+</div>
+</html>
+
+

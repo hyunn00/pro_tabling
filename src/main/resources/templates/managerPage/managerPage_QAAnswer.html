@@ -1,0 +1,218 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>문의, 답변</title>-->
+<!--</head>-->
+
+<!--<div th:fragment="managerContent">-->
+<!--    <div id="right2">-->
+
+<!--        <style>-->
+<!--            ion-icon:hover {-->
+<!--                cursor: pointer;-->
+<!--            }-->
+<!--        </style>-->
+<!--        <ion-icon style="float:right; font-size: 40px" onclick="history.go(-1);" name="close-outline"></ion-icon>-->
+
+<!--        <div>-->
+<!--            <div class="qu">-->
+<!--                <h2 th:text="${qa.get().userNo.userName} + ' 님의 문의 사항'"></h2>-->
+<!--                <p>-->
+<!--                    <label class="label">번호 :</label>-->
+<!--                    <input th:value="${qa.get().id}" readonly></input>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    <label class="label">제목 :</label>-->
+<!--                    <input th:value="${qa.get().qaTitle}" readonly></input>-->
+<!--                </p>-->
+<!--                <p>-->
+<!--                    <label class="label">문의 내용 :</label>-->
+<!--                    <input th:value="${qa.get().qaContent}" readonly></input>-->
+<!--                </p>-->
+<!--            </div>-->
+
+
+<!--            <div class="an">-->
+<!--                <h2>답변</h2>-->
+<!--                <hr>-->
+<!--                <form id="answerForm" action="managerPage_QARequest" method="post">-->
+<!--                    <input type="hidden" name="id" th:value="${qa.get().id}"/>-->
+<!--                    <p>-->
+<!--                        <label for="title">제목 :</label><br>-->
+<!--                        <input type="text" name="title" id="title">-->
+<!--                    </p>-->
+<!--                    <p>-->
+<!--                        <label for="content">답변 내용 :</label><br>-->
+<!--                        <textarea name="content" id="content" cols="30" rows="10"></textarea>-->
+<!--                    </p>-->
+<!--                    <p class="ps">-->
+<!--                        <input class="fifth" type="submit" value="등록">-->
+<!--                    </p>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+
+<!--    <script th:inline="javascript">-->
+
+<!--        document.querySelector(".fifth").addEventListener("click", function (event) {-->
+<!--            event.preventDefault(); // 기본 동작 방지-->
+
+<!--            const title = document.getElementById("title").value;-->
+<!--            const content = document.getElementById("content");-->
+
+
+<!--            if (title === '' || content === null) {-->
+<!--                swal("모든 항목을 입력하세요 :)");-->
+<!--            } else {-->
+
+<!--                swal({-->
+<!--                    title: "답변 등록",-->
+<!--                    text: "답변을 등록하시겠습니까?",-->
+<!--                    icon: "info",-->
+<!--                    buttons: {-->
+<!--                        confirm: {-->
+<!--                            text: "확인",-->
+<!--                            value: true,-->
+<!--                            visible: true,-->
+<!--                            className: "confirm-button",-->
+<!--                            closeModal: true-->
+<!--                        },-->
+<!--                        cancel: {-->
+<!--                            text: "취소",-->
+<!--                            value: null,-->
+<!--                            visible: true,-->
+<!--                            className: "cancel-button",-->
+<!--                            closeModal: true,-->
+<!--                        }-->
+<!--                    },-->
+<!--                    dangerMode: false-->
+<!--                }).then((willAdd) => {-->
+<!--                    if (willAdd) {-->
+<!--                        swal("Success!", "제목 : " + [[${qa.get().qaTitle}]] + " 에 대한 답변이 등록 되었습니다.", "success")-->
+<!--                            .then(function () {-->
+<!--                                document.getElementById("answerForm").submit();-->
+<!--                            });-->
+<!--                    } else {-->
+<!--                        swal("등록이 취소 되었습니다.")-->
+<!--                    }-->
+<!--                });-->
+<!--            }-->
+<!--        });-->
+
+
+<!--    </script>-->
+<!--</div>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>문의, 답변</title>
+</head>
+<div th:fragment="managerContent">
+    <div id="right2">
+
+        <style>
+            ion-icon:hover {
+                cursor: pointer;
+            }
+
+        </style>
+        <ion-icon style="float:right; font-size: 40px" onclick="history.go(-1);" name="close-outline"></ion-icon>
+
+        <div>
+            <div class="qu">
+                <h3 th:text="${qa.get().userNo.userName} + ' 님의 문의 사항'"></h3><hr>
+                <form id="k" action="">
+                <p>
+                    <label for="title">번호 :</label><br>
+                    <input type="text" name="title"  th:value="${qa.get().id}" readonly></input>
+                </p>
+                <p>
+                    <label for="content">제목 :</label><br>
+                    <input type="text" th:value="${qa.get().qaTitle}" readonly></input>
+                </p>
+                <p>
+                    <label class="label">문의 내용 :</label><br>
+                    <textarea cols="30" rows="10" th:text="${qa.get().qaContent}" readonly></textarea>
+<!--                    <input th:value="${qa.get().qaContent}" readonly></input>-->
+                </p>
+                </form>
+            </div>
+
+            <div class="an">
+                <h3>문의 답변</h3><hr>
+                <form id="answerForm" action="managerPage_QARequest" method="post">
+                    <input type="hidden" name="id" th:value="${qa.get().id}"/>
+                    <p>
+                        <label for="title">제목 :</label><br>
+                        <input type="text" name="title" id="title">
+                    </p>
+                    <p>
+                        <label for="content">답변 내용 :</label><br>
+                        <textarea name="content" id="content" cols="30" rows="10"></textarea>
+                    </p>
+                    <p class="ps">
+                        <input class="fifth" type="submit" value="등록">
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script th:inline="javascript">
+
+        document.querySelector(".fifth").addEventListener("click", function (event) {
+            event.preventDefault(); // 기본 동작 방지
+
+            const title = document.getElementById("title").value;
+            const content = document.getElementById("content");
+
+
+            if (title === '' || content === null) {
+                swal("모든 항목을 입력하세요 :)");
+            } else {
+
+                swal({
+                    title: "답변 등록",
+                    text: "답변을 등록하시겠습니까?",
+                    icon: "info",
+                    buttons: {
+                        confirm: {
+                            text: "확인",
+                            value: true,
+                            visible: true,
+                            className: "confirm-button",
+                            closeModal: true
+                        },
+                        cancel: {
+                            text: "취소",
+                            value: null,
+                            visible: true,
+                            className: "cancel-button",
+                            closeModal: true,
+                        }
+                    },
+                    dangerMode: false
+                }).then((willAdd) => {
+                    if (willAdd) {
+                        swal("Success!", "제목 : " + [[${qa.get().qaTitle}]] + " 에 대한 답변이 등록 되었습니다.", "success")
+                            .then(function () {
+                                document.getElementById("answerForm").submit();
+                            });
+                    } else {
+                        swal("등록이 취소 되었습니다.")
+                    }
+                });
+            }
+        });
+
+
+    </script>
+</div>
+</html>

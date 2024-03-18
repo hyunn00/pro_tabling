@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>점주 목록</title>
+</head>
+
+<div th:fragment="managerContent">
+    <div id="right2">
+        <div class="searchDiv">
+
+            <input th:value="${(input == null or input == '') ? '' : input}"
+                   type="text" id="searchInput" placeholder="점주 이름으로 검색" onchange="searchDinning()">
+            <button onclick="searchDinning()">검색</button>
+        </div>
+        <table id="userTable" style="text-align: center;">
+            <thead>
+            <tr>
+                <th>점주 번호</th>
+                <th>점주 이름</th>
+                <th>점주 아이디</th>
+                <th>점주 이메일</th>
+                <th>점주 전화번호</th>
+                <th>가입일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="users : ${users}"
+                th:onclick="'javascript:redirectToJumDetail(\'' + ${users.userNo} + '\')'">
+                <td th:text="${users.userNo}"></td>
+                <td th:text="${users.userName}"></td>
+                <td th:text="${users.userId}"></td>
+                <td th:text="${users.userEmail}"></td>
+                <td th:text="${users.userTel}"></td>
+                <!--                <td th:text="${users.userStartDate}"></td>-->
+                <td th:text="${#strings.substring(users.userStartDate, 0, 10)}"></td>
+
+            </tr>
+            </tbody>
+        </table>
+
+        <!--        <div th:if="${!users.isEmpty()}">-->
+        <!--            <ul class="pagination justify-content-center">-->
+        <!--                <li class="page-item" th:classappend="${!users.hasPrevious} ? 'disabled'">-->
+        <!--                    <a class="page-link"-->
+        <!--                       th:href="@{|?page=${users.number-1 < 0 ? 0 : users.number-1}|}">-->
+        <!--                        <span>이전</span>-->
+        <!--                    </a>-->
+        <!--                </li>-->
+        <!--                <li th:each="page: ${#numbers.sequence(0, users.totalPages-1)}"-->
+        <!--                    th:if="${page >= users.number-5 and page <= users.number+5}"-->
+        <!--                    th:classappend="${page == users.number} ? 'active'"-->
+        <!--                    class="page-item">-->
+        <!--                    <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>-->
+        <!--                </li>-->
+        <!--                <li class="page-item" th:classappend="${!users.hasNext} ? 'disabled'">-->
+        <!--                    <a class="page-link" th:href="@{|?page=${users.number+1}|}">-->
+        <!--                        <span>다음</span>-->
+        <!--                    </a>-->
+        <!--                </li>-->
+        <!--            </ul>-->
+        <!--        </div>-->
+        <div th:if="${!users.isEmpty()}">
+            <ul class="pagination justify-content-center">
+
+
+                <li class="page-item" th:classappend="${!users.hasPrevious} ? 'disabled'">
+                    <a class="page-link" href="javascript:void(0)" onclick="prePage()">
+                        <span>이전</span>
+                    </a>
+                </li>
+
+
+                <li th:each="page: ${#numbers.sequence(0, users.totalPages-1)}"
+                    th:if="${page >= users.number-5 and page <= users.number+5}"
+                    th:classappend="${page == users.number} ? 'active'"
+                    class="page-item">
+                    <a th:text="${page + 1}" class="page-link" href="javascript:void(0)" th:onclick="gotoPage([[${page}]])"></a>
+                </li>
+
+
+                <li class="page-item" th:classappend="${!users.hasNext} ? 'disabled'">
+                    <a class="page-link" href="javascript:void(0)" onclick="nextPage()">
+                        <span>다음</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
+    </div>
+    <script>
+        function redirectToJumDetail(restNo) {
+            window.location.href = '/manager/managerPage_JDetail?userNo=' + restNo;
+        }
+
+        function searchDinning() {
+            let searchInput = document.getElementById("searchInput").value;
+            fetch("/manager/managerPage_JList?searchInput=" + searchInput)
+                .then(resp => resp.text())
+                .then(data => {
+                    let doc = new DOMParser().parseFromString(data, 'text/html');
+                    document.getElementById("userTable").innerHTML = doc.getElementById("userTable").innerHTML;
+                    document.querySelector(".pagination").innerHTML = doc.querySelector(".pagination").innerHTML;
+                });
+        }
+
+    </script>
+
+    <script>
+
+        // let a =document.querySelector( 'li.page-item.active' ).textContent
+        //
+        // console.log(a)
+
+        function nextPage() {
+            let nextInput = document.getElementById("searchInput").value;
+            let curPage = parseInt( document.querySelector( 'li.page-item.active' ).textContent );
+            window.location.href = "?page=" + curPage + "&nextInput=" + nextInput;
+        }
+
+        function gotoPage(page) {
+            let nextInput = document.getElementById("searchInput").value;
+            window.location.href = "?page=" + page + "&nextInput=" + nextInput;
+        }
+
+        function prePage() {
+            let nextInput = document.getElementById("searchInput").value;
+
+            window.location.href = "?page=" + [[${users.number-1}]] + "&nextInput=" + nextInput;
+        }
+
+
+
+
+    </script>
+</div>
+</html>

@@ -1,0 +1,128 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{userPage/Layout_userPage2}">
+
+<head>
+<!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+          integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.6.3/css/all.min.css"-->
+<!--          integrity="sha512-xr26aDbJiQqN9m6SuZ2VbNzGaV7WKFpAERo1l4pgrqBpSB1lCZI72aL2v2la6ApW7vFN3reIab8Eai5EaFJ3eA=="-->
+<!--          crossorigin="anonymous"/>-->
+</head>
+<th:block th:fragment="content">
+
+    <link th:href="@{/css/userPage/userPageButton.css}" rel="stylesheet">
+
+
+    <style>
+        .mypage_sidebar_nav {
+            color: gray;
+        }
+        #QASelect {
+            font-weight: bold;
+            color: black;
+            border-bottom: 2px solid black;
+        }
+
+
+        .grid-item {
+            display: inline-block;
+            width: 160px; /* 적절한 크기로 조정해 주세요 */
+            height: 160px; /* 가로세로 크기를 동일하게 설정하여 정사각형으로 만듭니다 */
+            text-align: center;
+            line-height: 150px;
+            text-decoration: none;
+            margin: 3px; /* 각 아이템 간 간격을 조정해 주세요 */
+            position: relative; /* 아이콘과 텍스트를 포지셔닝하기 위해 */
+
+            border: 1px solid rgba(72, 119, 166, 0.89); /* 테두리 */
+            color: rgba(72, 119, 166, 0.89); /* 아이콘 색상 */
+            background-color: rgba(108, 180, 217, 0.42); /* 호버 이펙팅 색상 */
+        }
+
+        .round-top-left i {
+            position: absolute;
+            top: 40%; /* 아이콘을 수직으로 가운데로 위치시킵니다. */
+            left: 50%; /* 아이콘을 수평으로 가운데로 위치시킵니다. */
+            transform: translate(-50%, -50%); /* 아이콘을 정확한 가운데로 조정합니다. */
+            font-size: 40px;
+        }
+
+        .round-top-right i {
+            position: absolute;
+            top: 40%; /* 아이콘을 수직으로 가운데로 위치시킵니다. */
+            left: 50%; /* 아이콘을 수평으로 가운데로 위치시킵니다. */
+            transform: translate(-50%, -50%); /* 아이콘을 정확한 가운데로 조정합니다. */
+            font-size: 40px;
+        }
+
+        .round-bottom-left i {
+            position: absolute;
+            top: 40%; /* 아이콘을 수직으로 가운데로 위치시킵니다. */
+            left: 50%; /* 아이콘을 수평으로 가운데로 위치시킵니다. */
+            transform: translate(-50%, -50%); /* 아이콘을 정확한 가운데로 조정합니다. */
+            font-size: 40px;
+        }
+
+        .round-bottom-right i {
+            position: absolute;
+            top: 40%; /* 아이콘을 수직으로 가운데로 위치시킵니다. */
+            left: 50%; /* 아이콘을 수평으로 가운데로 위치시킵니다. */
+            transform: translate(-50%, -50%); /* 아이콘을 정확한 가운데로 조정합니다. */
+            font-size: 40px;
+        }
+
+        .round-bottom-left {
+            border-top-left-radius: 80px; /* 왼쪽 위 모서리를 둥글게 만듭니다. */
+            border-bottom-left-radius: 5px; /* 왼쪽 아래 모서리를 둥글게 만듭니다. */
+        }
+
+        .round-bottom-right {
+            border-top-right-radius: 5px; /* 오른쪽 위 모서리를 둥글게 만듭니다. */
+            border-bottom-right-radius: 80px; /* 오른쪽 아래 모서리를 둥글게 만듭니다. */
+        }
+
+        .text-below {
+            width: 64px;
+            text-align: center;
+            font-size: 15px;
+            margin-top: 7px; /* 텍스트와 아이콘 사이 간격 조정 */
+            text-decoration: none;
+        }
+
+        hr {
+            display: block;
+            unicode-bidi: isolate;
+            margin-block-start: 0.5em;
+            margin-block-end: 0.5em;
+            margin-inline-start: 398px;
+            margin-inline-end: 390px;
+            overflow: hidden;
+            border-style: inset;
+            border-width: 1px;
+        }
+    </style>
+
+    <div style="display: flex; justify-content: space-between; padding: 5px 400px; font-size: 150%">
+        <div style="width: 300px">문의 종류를 선택해주세요</div>
+    </div>
+    <hr>
+    <div id="content" style="display: flex; margin: 150px 0; justify-content: center;">
+        <a id="myInquiry" th:href="@{/QA/user_qa_form}"
+           class="grid-item round-bottom-left button button--pipaluk button--inverted button--round-l button--text-thick button--text-upper">
+            <i class="fas fa-question-circle"></i>
+            <div class="text-below">문의하기</div>
+        </a>
+        <a id="myInfo" th:href="@{/QA/user_qa}"
+           class="grid-item round-bottom-right button button--pipaluk button--inverted button--round-l button--text-thick button--text-upper">
+            <i class="fas fa-user-cog"></i>
+            <div class="text-below">My문의</div>
+        </a>
+    </div>
+
+
+
+</th:block>
+</html>

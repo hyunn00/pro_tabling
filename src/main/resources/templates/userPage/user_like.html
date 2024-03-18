@@ -1,0 +1,144 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{userPage/Layout_userPage2}">
+
+<th:block th:fragment="content">
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <style>
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .mypage_sidebar_nav {
+            color: gray;
+        }
+
+        #likeSelect {
+            font-weight: bold;
+            color: black;
+            border-bottom: 2px solid black;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        #remoteList label {
+            list-style: none;
+            cursor: pointer;
+        }
+
+        #posts_main {
+            display: flex;
+            /*justify-content: center;*/
+            /*align-items: center;*/
+            flex-direction: column;
+        }
+
+        .container1 {
+            display: flex;
+            flex-direction: row;
+            padding: 21px;
+            padding-bottom: 15px;
+            /*padding-bottom: 435px;*/
+            background: #fff;
+            border: 1.6px solid #dddddd;
+            border-radius: 14px;
+            box-sizing: border-box;
+            margin-bottom: 45px;
+            /*margin-top: 60px;*/
+            transition: padding-bottom 0.5s ease-in-out;
+            width: auto;
+            height: 160px;
+        }
+
+        .left {
+            background-color: gray;
+            display: inline-block;
+            width: 140px;
+            height: 120px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .left2 {
+            /*background-color: gray;*/
+            display: inline-block;
+            width: 300px;
+            height: 221px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .right {
+            width: 490px;
+            margin-left: 31px;
+            text-align: center;
+            justify-content: center
+        }
+
+        hr {
+            display: block;
+            unicode-bidi: isolate;
+            margin-block-start: 0.5em;
+            margin-block-end: 0.5em;
+            margin-inline-start: auto;
+            margin-inline-end: auto;
+            overflow: hidden;
+            border-style: inset;
+            border-width: 1px;
+        }
+
+        #GoToRest:hover{
+            color: black;
+        }
+
+    </style>
+
+    <div style="display: flex; justify-content: center; margin-top: -132px">
+        <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; background-color: #FFFFFF; width: 1231px; height: auto; border-radius: 0px; padding:2% 10% ">
+
+            <h4 th:text="'총 ' + ${userLike.size()} + '개'" style="padding-bottom: 15px"></h4>
+
+            <div id="wrap" class="containers" th:each="userLikes : ${userLike}">
+                <div id="container1" class="container1" style="display: flex">
+                    <div class="left">
+                        <img th:attr="mysrc=${userLikes.getBase64Image()}"
+                             style="width: 140px; height: 120px; border-radius: 10px;">
+                    </div>
+
+                    <div class="right" style="display: flex; flex-direction: column; align-items: flex-start">
+                        <p class="gray-text p-right">
+                        <div style="text-align: left; display: flex; flex-direction: column;">
+                            <a th:href="'/detail?restNo=' + ${userLikes.getRestNo()}" style="margin-bottom: 7px">
+                                <b style="font-size: 20px;" th:text="'  '+${userLikes.getRestName()}"
+                                   class="RestNoHover"></b>
+                            </a>
+                            <div><i class="fa-solid fa-utensils" style="color: #74C0FC;"></i><b th:text="${'  '+userLikes.getRestCategory()}"></b></div>
+                        <div>
+                            <i class="fa-solid fa-star" style="color: #FFD43B;"></i>
+                            <b th:text="${userLikes.getRestScore() != null && !userLikes.getRestScore().isNaN() ? userLikes.getRestScore() : 0.0}"></b>
+                            <b th:text="(${userLikes.getTotalReviews()} >= 100 ? '100+' : '(' + ${userLikes.getTotalReviews()} + ')')"></b>
+                        </div>
+                        </div>
+                        <b th:text="${userLikes.getRestAddr()}" style="margin-top: 23px"></b><br>
+                    </div>
+
+                    <div style="border-left: 1px solid rgba(128,128,128,0.66);">
+                        <a id="GoToRest" th:href="'/detail?restNo=' + ${userLikes.getRestNo()}" style="margin-bottom: 7px; margin-left: 24px"><strong><i class="fa-regular fa-share-from-square"></i>  가게 바로 가기</strong></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="/js/imglazy.js"></script>
+</th:block>
+</html>

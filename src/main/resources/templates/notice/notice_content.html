@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>홈 공지사항 목록</title>
+</head>
+
+<div th:fragment="NoticeContent">
+
+
+    <div style="margin-top: 100px; margin-left: 60px; text-align: center">
+        <h2 style="font-weight: bold">공지사항</h2>
+    </div>
+
+    <div style="background-color: #e5dddd; height: 800px">
+        <div style=" display: flex; justify-content: center; align-items: center; margin-top: 50px">
+
+            <table id="noticeTable">
+
+                <tbody>
+                <tr th:each="list, listIndex : ${list}"
+                    th:onclick="'javascript:redirectToNoticeDetail(\'' + ${list.id} + '\')'"
+                    th:class="${list.importantNotice} ? 'important' : ''">
+
+                    <td>
+                        <button th:if="${list.importantNotice}" id="impob" style="font-size: 14px" th:text="'공 지'" onclick="redirectToDetail('${list.id}')"></button>
+                        <button th:unless="${list.importantNotice}" id="impob2" style="font-size: 12px" th:text="'일 반'" onclick="redirectToDetail('${list.id}')"></button>
+                    </td>
+
+                    <td th:text="${list.subject}"></td>
+                    <td th:text="${#strings.substring(list.writeDate, 0, 10)}"></td>
+
+                    <input type="hidden" th:value="${list.importantNotice}">
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <div th:if="${!list.isEmpty()}">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${!list.hasPrevious} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{|?page=${list.number-1 < 0 ? 0 : list.number-1}|}">
+                        <span>이전</span>
+                    </a>
+                </li>
+                <li th:each="page: ${#numbers.sequence(0, list.totalPages-1)}"
+                    th:if="${page >= list.number-5 and page <= list.number+5}"
+                    th:classappend="${page == list.number} ? 'active'"
+                    class="page-item">
+                    <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+                </li>
+                <li class="page-item" th:classappend="${!list.hasNext} ? 'disabled'">
+                    <a class="page-link" th:href="@{|?page=${list.number+1}|}">
+                        <span>다음</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+
+        //디테일로 이동 버튼
+        function redirectToNoticeDetail(id) {
+            window.location.href = '/notice/notice_detail?id=' + id;
+        }
+
+
+    </script>
+
+</div>
+</html>
+
+

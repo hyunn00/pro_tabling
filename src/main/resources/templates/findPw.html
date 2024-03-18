@@ -1,0 +1,166 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>아이디 찾기</title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+
+    #mail_input, #mail_number {
+        margin: 20px auto 5px auto;
+        width: 300px;
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+
+    #mail_number {
+        margin: 5px auto;
+        width: 300px;
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #mail_input p, #mail_number p {
+        margin-bottom: 10px;
+    }
+
+    input[type="text"], button {
+        padding: 8px;
+        margin-bottom: 10px;
+        width: calc(100% - 16px);
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    input[type="email"], button {
+        padding: 8px;
+        margin-bottom: 10px;
+        width: calc(100% - 16px);
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<body>
+
+<h2>비밀번호 찾기</h2>
+
+<div id="mail_input" name="mail_input">
+    <p>아이디를 입력해주세요.</p>
+    <input type="text" name="id" id="id" placeholder="아이디 입력">
+
+    <p>메일을 입력해주세요.</p>
+    <input type="email" name="mail" id="mail" placeholder="이메일 입력">
+    <button type="button" id="sendBtn" name="sendBtn" onclick="sendNumber()">인증번호 받기</button>
+    <p id="msg" style="display: none;">인증번호 발송에 시간이 소요되고 있습니다. 잠시만 기다려 주십시오.</p>
+</div>
+<br>
+<div id="mail_number" name="mail_number" style="display: none">
+    <p>인증번호를 입력해주세요.</p>
+    <input type="text" name="number" id="number" placeholder="인증번호 입력">
+    <button type="button" name="confirmBtn" id="confirmBtn" onclick="confirmNumber()">인증번호 확인</button>
+</div>
+<br>
+<input type="text" id="Confirm" name="Confirm" style="display: none" value="">
+
+
+<script type="text/javascript">
+    function sendNumber(){
+
+        let id = $("#id").val();
+        let email = $("#mail").val();
+
+        // 이메일 형식 유효성 검사
+        let emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!email || !emailPattern.test(email)) {
+            alert("올바른 이메일 주소를 입력하세요.");
+            return;
+        }
+
+        document.getElementById("msg").style.display="block";
+        $.ajax({
+            url: "/emailToPw",
+            type: "post",
+            dataType: "text",
+            data: { "mail": $("#mail").val(),
+             "id": $("#id").val()},
+            success: function(response) {
+                if (response === "findPw") {
+                    alert("없는 정보 입니다. " +
+                        "다시 입력해 주세요.");
+                    window.location.href = "/findPw";
+                } else {
+                    document.getElementById("msg").style.display="none";
+                    alert("인증번호가 발송되었습니다.");
+                    $("#Confirm").val(response);
+                    $("#mail_number").css("display", "block");
+                }
+            }
+        });
+    }
+
+    function confirmNumber(){
+        let number1 = $("#number").val();
+        let number2 = $("#Confirm").val();
+
+        if(number1 === number2){
+
+                    // openLoginPopup();
+            window.location.href = "/Pwcheck?id=" + $("#id").val();
+        }else{
+            alert("번호가 다릅니다.");
+        }
+    }
+
+    function openLoginPopup() {
+        // 화면의 중앙에 위치시키기 위한 창의 좌표 계산
+        let left = (window.screen.width - 600) / 2;
+        let top = (window.screen.height - 400) / 2;
+
+        window.open("/Pwcheck?id=" + $("#id").val(), "_blank", "width=600,height=400,left=" + left + ",top=" + top);
+    }
+
+    function receiveMessage(event) {
+        // 받은 메시지가 유효한 경우 처리
+        if (event.data === "popup") {
+            window.close();
+            // window.location.href = "/login";
+        }
+    }
+
+    window.addEventListener("message", receiveMessage, false);
+
+    window.onkeyup = function(e) {
+        let key = e.keyCode ? e.keyCode : e.which;
+
+        if(key == 27) {
+            window.close();
+        }
+    }
+
+</script>
+
+</body>
+</html>

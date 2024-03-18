@@ -1,0 +1,307 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<title th:fragment="titleFragment">맛집 예약, 예맛!</title>
+
+<div th:fragment="headerFragment" id="top">
+
+    <script>
+        function sendSearchQuery() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/search?' + getSearchWord(), true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let doc = new DOMParser().parseFromString(xhr.responseText, 'text/html');
+                    let div = document.querySelector('ul#resultList');
+                    if (!div) return;
+                    div.innerHTML = doc.querySelector('ul#resultList').innerHTML;
+                    let scriptTags = doc.querySelectorAll('script');
+                    let runnableScript = [];
+                    scriptTags.forEach(scriptTag => {
+                        if (null === scriptTag.getAttribute("map"))
+                            return;
+                        runnableScript.push(scriptTag.textContent);
+                    });
+                    eval(runnableScript.join(''));
+                    var script = Object.assign(document.createElement('script'), {
+                        type: 'text/javascript',
+                        src: "/js/imglazy.js"
+                    });
+                    document.head.appendChild(script);
+                }
+            };
+            xhr.send();
+        }
+    </script>
+    <style>
+        #mainH .searchBox div:nth-of-type(2) {
+            position: absolute;
+            border-radius: 20px;
+            background-color: rgb(255 255 255 / 100%);
+            width: calc(100% - 203px);
+            padding-left: 8px;
+            display: block;
+            margin-left: 153px;
+            top: -81px;
+        }
+        #mainH .searchBox div:nth-of-type(2).kBXqGy {
+            border-radius: 0 0 20px 20px;
+            /*background-color: rgb(255 255 255 / 50%);*/
+            box-shadow: -6px 0 6px -6px rgba(0, 0, 0, 1),
+            6px 0 6px -6px rgba(0, 0, 0, 1),
+            0 6px 6px -6px rgba(0, 0, 0, 1);
+        }
+        #mainH #searchBar {
+            border-radius: 20px;
+            box-shadow: rgba(0, 0, 0, 1) 0 0 6px 0;
+        }
+        #mainH #searchBar.kBXqGy {
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -6px 6px -6px rgba(0, 0, 0, 1),
+            -6px 0 6px -6px rgba(0, 0, 0, 1),
+            6px 0 6px -6px rgba(0, 0, 0, 1);
+        }
+        #mainH .searchBox li {
+            position: relative;
+        }
+        #mainH .searchBox span {
+            left: 26px;
+            position: absolute;
+        }
+        #mainH .searchBox .close {
+            border: 0;
+            background-color: transparent;
+            left: 120px;
+            position: relative;
+        }
+
+    </style>
+    <div>
+        <nav class="navbar navbar-expand-lg navbar-light" id="allHeader">
+            <!--            <h2>예약 맛집!</h2>-->
+            <!--            <div th:replace="~{/include/logo::logoContent(30,1)}"></div>-->
+            <div id="mainLogo" th:replace="~{/include/logo::logoContent(30,1)}"></div>
+
+            <div id="navbarNav">
+
+
+                <!-- 날씨 관련 -->
+                <div style="display: flex; align-items: center;">
+                    <div style="margin-right: 5px;">
+                        <a href="https://www.weather.go.kr/w/weather/forecast/short-term.do?stnId=143#">
+                        <img class="icon" style="width: 45px; height: 45px;" onclick="toggleModal()">
+                        </a>
+                    </div>
+                    <div>
+                        <div class="temperature"></div>
+                    </div>
+                </div>
+
+
+                <button class="alarm-button noCon" onclick="onAlarmClick()">
+                    <img src="/images/ch-logo-white-32.png" alt="alarm1">
+                    <p style="display: none;">1</p>
+                </button>
+
+
+                <div>
+                    <div style="
+                         transform-origin: right top;
+                         right: 64px;
+                         top: 62px;
+                         background-color: #f7f7f7;
+                         max-height: 865px;
+                         "
+                         class="chats dropmenu" name="chat">
+                        <div th:include="~{/chat/chatroom::chatFragment}"></div>
+                    </div>
+                </div>
+
+                <button onclick="onMenuClick()" onblur="handleBlur()">
+                    <img id="avatar" src="/images/logo_avatar_32dp.png" alt="avatar"
+                         style="width:32px; height:32px; border-radius: 50%; object-fit: cover;">
+                </button>
+                <div>
+                    <div style="
+                         transform-origin: right top;
+                         right: 16px;
+                         top: 62px;
+                         background-color: #ffffff;
+                         max-height: 865px;
+                         "
+                         class="dropmenu" name="mymenu" id="mymenu">
+                        <!--/*[+ 이 안의 내용은 fetch("/api/loadMyMenu") header_dropmenu.html 으로 채워집니다 +]*/-->
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+
+    <script>
+        function onAlarmClick(btn) {
+            // document.querySelector("[name=chat]").classList.toggle("visible");
+            document.dispatchEvent( new Event("chatAlarmButtonClick") );
+        }
+
+        function onMenuClick(btn) {
+            document.querySelector("[name=mymenu]").classList.toggle("visible");
+            document.querySelector("[name=mymenu]").style.opacity = 1;
+        }
+        async function handleBlur() {
+            await sleep(200)
+            document.querySelector("[name=mymenu]").classList.remove("visible");
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function getSearchWord() {
+            const keyword = document.getElementById('searchBar').value;
+
+            const filterString = Array.from(document.querySelectorAll("ul[class^='filter']")).map(item =>
+                item.className + "=" + Array.from(item.querySelectorAll(".picked")).map(e => e.value).join(",")
+            ).join("&");
+
+            return 'keyword=' + encodeURIComponent(keyword) + "&" + filterString;
+        }
+
+        function toggleSearchForm() {
+            return;
+            var form = document.getElementById("searchBar");
+            if (form.style.display === "none") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none";
+            }
+        }
+
+        function handleFocusIn(bAdd) {
+            document.querySelector(".searchBox").classList.toggle("kBXqGy", bAdd);
+            document.querySelector(".searchBox #searchBar").classList.toggle("kBXqGy", bAdd);
+            document.querySelectorAll(".searchBox div").forEach(e => e.classList.toggle("kBXqGy", bAdd));
+            document.querySelector(".searchBox div:nth-of-type(2)").style.display = bAdd ? "block" : "none";
+            updateSearchItems();
+        }
+
+        function updateSearchItems() {
+            // let liTemplate = `<li><span name="$name$">$name$</span><span class="close">X</span></li>`;
+            let liTemplate = `<li><i class="fa-solid fa-clock-rotate-left"></i>
+                                  <span key="$key$" name="$name$">$name$</span><button class="close">x</button>
+                              </li>`;
+
+            let arrVisit = [];
+            for (let localKey in localStorage) {
+                if (localKey.startsWith("visit") )
+                    arrVisit.push( { ...JSON.parse( localStorage.getItem( localKey ) ), key:localKey } );
+            }
+            arrVisit.sort( (a,b)=> b.time - a.time );
+
+            let strHtml = "";
+            arrVisit.slice( 0, 3 ).forEach( elem =>
+                strHtml += liTemplate.replaceAll( '$name$', elem.name ).replaceAll( '$key$', elem.key )
+            );
+
+            if ( !!strHtml )
+                strHtml = "<p>최근 방문한 가게</p>" + strHtml;
+
+            document.querySelector( ".searchBox ul.visit" ).innerHTML = strHtml;
+        }
+        function handleCloseSearchItems( event ) {
+            if ("BUTTON" !== event.target.tagName || !event.target.classList.contains( "close" ) )
+                return;
+
+            const localKey = event.target.parentNode.querySelector( "span" ).getAttribute( "key" )
+            localStorage.removeItem( localKey );
+            updateSearchItems();
+        }
+
+        function handleSearchItemClick(event) {
+            if ("SPAN" !== event.target.tagName || !event.target.getAttribute('name') )
+                return;
+            document.querySelector("#searchBar").value = event.target.textContent;
+            document.querySelector("form").submit();
+        }
+
+        document.addEventListener("click", (event) => {
+            const bSearchFocus = !!event.target.closest(".searchBox");
+            handleFocusIn(bSearchFocus);
+        });
+
+        (function () {
+            fetch("/api/loadMyMenu")
+                .then(resp => resp.text())
+                .then(data => {
+                    if (data) {
+                        let doc = new DOMParser().parseFromString(data, 'text/html');
+                        document.querySelector("[name=mymenu]").innerHTML = doc.querySelector("div").innerHTML;
+                        eval(doc.querySelector('script')?.textContent);
+                    }
+                });
+        })();
+
+        // 날씨 관련
+        // const button = document.querySelector('.button');
+        //
+        // document.addEventListener('click', () => {
+        //     navigator.geolocation.getCurrentPosition(success);
+        // });
+
+        const API_KEY = '30daaa26c215673ed477b33a05426ac5';
+
+        const tempSection = document.querySelector('.temperature');
+        // const placeSection = document.querySelector('.place');
+        // const descSection = document.querySelector('.description');
+        const iconSection = document.querySelector('.icon');
+
+        const success = (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            getWeather(latitude, longitude);
+        };
+        const noPosition = (position) => {
+            getWeather(35.86868025887658, 128.5987419727357);
+        }
+
+        const getWeather = (lat, lon) => {
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=kr`)
+                .then((response) => response.json())
+                .then((json) => {
+                    const temperature = json.main.temp + "°C";
+                    // let value = temperature + "";
+                    // const place = json.name;
+                    // const description = json.weather[0].description;
+                    const icon = json.weather[0].icon;
+                    const iconURL = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+
+                    tempSection.innerText = temperature;
+                    // placeSection.innerText = place;
+                    // descSection.innerText = description;
+                    iconSection.setAttribute('src', iconURL);
+                })
+            // .catch((error) => {
+            //     alert(error);
+            // });
+            // 위 catch 코드 주석을 풀면 계속 경고창이 나옴,,
+        }
+        navigator.geolocation.getCurrentPosition(success, noPosition);
+
+
+        // window.addEventListener('scroll', function() {
+        //     var header = document.getElementById('allHeader');
+        //     var scrollPosition = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+        //
+        //     // 내려간 스크롤의 양을 조절하여 배경색을 변경
+        //     if (scrollPosition > 100) { // 내려간 스크롤이 100px 이상일 때
+        //         header.style.backgroundColor = 'gray'; // 배경색 변경
+        //     } else {
+        //         header.style.backgroundColor = 'white'; // 다시 투명하게
+        //     }
+        // });
+
+    </script>
+</div>
+</html>
+
+

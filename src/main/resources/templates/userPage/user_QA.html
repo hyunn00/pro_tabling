@@ -1,0 +1,126 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{userPage/Layout_userPage2}">
+
+<th:block th:fragment="content">
+
+    <style>
+
+        #QASelect {
+            font-weight: bold;
+            color: black;
+            border-bottom: 2px solid black;
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 99.4%;
+        }
+
+        th, td {
+            /*border-bottom: 1px solid #ddd;*/
+            padding: 18px;
+            text-align: center;
+        }
+
+        /*a:hover {*/
+        /*    color: #0056b3;*/
+        /*}*/
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .page-item {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .page-link {
+            color: #007bff;
+            transition: color 0.3s ease;
+        }
+
+        .page-link:hover {
+            color: #0056b3;
+        }
+
+        #trBody:hover {
+            background-color: #f5f5f5; /* 호버 시 배경색 변경 */
+            cursor: pointer; /* 호버 시 마우스 커서 변경 */
+        }
+
+    </style>
+
+    <!--    <a th:href="@{/QA/user_qa_form/{userNo}(userNo=${Num})}">문의추가</a>-->
+
+    <div style="display: flex; justify-content: center; margin-top: -132px">
+        <div style="display: flex; justify-content: center; background-color: #FFFFFF; width: 1231px; height: auto; border-radius: 0px; padding: 2% ">
+            <table>
+                <thead>
+                <tr style="height: 50px; border-bottom: 1px solid #ddd">
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>내용</th>
+                    <th>문의 날짜</th>
+                    <th>문의 처리 상태</th>
+                </tr>
+                </thead>
+
+                <tbody th:each="QAs, iterStat : ${QA}">
+                <tr id="trBody" th:onclick="|location.href='/QA/Qa_answer/${QAs.id}'|">
+                    <td th:text="${iterStat.count + (QA.getNumber() * QA.getSize())}"></td>
+                    <td th:text="${QAs.qaTitle}"></td>
+                    <td th:if="${#strings.length(QAs.qaContent) > 10}" th:text="${#strings.substring(QAs.qaContent, 0, 10) + '....'}"></td>
+                    <td th:unless="${#strings.length(QAs.qaContent) > 10}" th:text="${QAs.qaContent}"></td>
+                    <td th:text="${#strings.replace(QAs.qaWriteTime, 'T', ' ')}"></td>
+                    <td style="display: flex; justify-content: center">
+                        <div th:if="${QAs.qaStatus}" style="border-radius: 20px; width: 70%; font-weight: bold">
+                            <div> <i class="fa-solid fa-check"></i> 처리완료</div>
+                        </div>
+                        <div th:unless="${QAs.qaStatus}" style="border-radius: 10px; width: 70%;">
+                            <div> <i class="fa-solid fa-magnifying-glass"></i> 처리중</div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+
+            </table>
+
+<!--            <div th:if="${QA == null or #lists.isEmpty(QA)}">-->
+<!--                <div style="display: flex; flex-direction: column; align-items: center ;justify-content: center; padding: 140px">-->
+<!--                    <h1>이런!</h1>-->
+<!--                    <h4>리뷰가 하나도 없어요!</h4>-->
+<!--                    <span>예약을 이용 후 작성 할 수 있어요..</span>-->
+<!--                </div>-->
+<!--            </div>-->
+
+        </div>
+    </div>
+
+    <div th:if="${!QA.isEmpty()}" style="margin-bottom: 3%">
+        <ul class="pagination justify-content-center" style="margin-top: 3%">
+            <li class="page-item" th:classappend="${!QA.hasPrevious} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|?page=${QA.number-1 < 0 ? 0 : QA.number-1}|}">
+                    <span> < </span>
+                </a>
+            </li>
+            <li th:each="page: ${#numbers.sequence(0, QA.totalPages-1)}"
+                th:if="${page >= QA.number-5 and page <= QA.number+5}"
+                th:classappend="${page == QA.number} ? 'active'"
+                class="page-item">
+                <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+            </li>
+            <li class="page-item" th:classappend="${!QA.hasNext} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${QA.number+1}|}">
+                    <span> > </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+</th:block>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>가게 목록</title>
+</head>
+
+<div th:fragment="managerContent">
+    <div id="right2">
+        <div class="searchDiv">
+
+
+
+            <input th:value="${(input == null or input == '') ? '' : input}"
+                type="text" id="searchInput" placeholder="가게 이름으로 검색" onchange="searchDinning()">
+        <button onclick="searchDinning()">검색</button>
+</div>
+        <table id="dinningTable" style="text-align: center;">
+            <thead>
+            <tr>
+                <th>가게 번호</th>
+                <th>가게 이름</th>
+                <th>가게 주소</th>
+                <th>가게 전화번호</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="dinning : ${dinningList}"
+                th:onclick="'javascript:redirectToJumrestDetail(\'' + ${dinning.restNo} + '\')'">
+                <td th:text="${dinning.restNo}"></td>
+                <td th:text="${dinning.restName}"></td>
+                <td th:text="${dinning.restAddr}"></td>
+                <td th:text="${dinning.restTel}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${!dinningList.isEmpty()}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!dinningList.hasPrevious} ? 'disabled'">
+<!--                    <a class="page-link"-->
+<!--                       th:href="@{|?page=${dinningList.number-1 < 0 ? 0 : dinningList.number-1}|}">-->
+<!--                        <span>이전</span>-->
+<!--                    </a>-->
+                    <a class="page-link" href="javascript:void(0)" onclick="prePage()">
+                        <span>이전</span>
+                    </a>
+
+                </li>
+<!--                <li th:each="page: ${#numbers.sequence(0, dinningList.totalPages-1)}"-->
+<!--                    th:if="${page >= dinningList.number-5 and page <= dinningList.number+5}"-->
+<!--                    th:classappend="${page == dinningList.number} ? 'active'"-->
+<!--                    class="page-item">-->
+<!--                    <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>-->
+<!--                </li>-->
+                <li th:each="page: ${#numbers.sequence(0, dinningList.totalPages-1)}"
+                    th:if="${page >= dinningList.number-5 and page <= dinningList.number+5}"
+                    th:classappend="${page == dinningList.number} ? 'active'"
+                    class="page-item">
+                    <a th:text="${page + 1}" class="page-link" href="javascript:void(0)" th:onclick="gotoPage([[${page}]])"></a>
+                </li>
+
+
+              <!--  <li class="page-item" th:classappend="${!dinningList.hasNext} ? 'disabled'">
+                    <a class="page-link" th:href="@{|?page=${dinningList.number+1}|}">
+                        <span>다음</span>
+                    </a>
+                </li>-->
+                <li class="page-item" th:classappend="${!dinningList.hasNext} ? 'disabled'">
+                    <a class="page-link" href="javascript:void(0)" onclick="nextPage()">
+                        <span>다음</span>
+                    </a>
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+
+    <script>
+
+
+        function redirectToJumrestDetail(restNo) {
+            window.location.href = '/manager/managerPage_JrestDetail?restNo=' + restNo;
+        }
+
+
+
+        function searchDinning() {
+            let searchInput = document.getElementById("searchInput").value;
+            fetch("/manager/managerPage_JrestList?searchInput=" + searchInput)
+                .then(resp => resp.text())
+                .then(data => {
+                    let doc = new DOMParser().parseFromString(data, 'text/html');
+                    document.getElementById("dinningTable").innerHTML = doc.getElementById("dinningTable").innerHTML;
+                    document.querySelector(".pagination").innerHTML = doc.querySelector(".pagination").innerHTML;
+                });
+        }
+
+    </script>
+
+    <script>
+        function nextPage() {
+            var searchValue = document.getElementById('searchInput').value;
+            let curPage = parseInt( document.querySelector( 'li.page-item.active' ).textContent );
+
+            window.location.href = "?page=" + (curPage)+ "&nextInput=" + encodeURIComponent(searchValue);
+        }
+
+        function prePage() {
+            var searchValue = document.getElementById('searchInput').value;
+            window.location.href = "?page=" + [[${dinningList.number-1}]]+ "&nextInput=" + encodeURIComponent(searchValue);
+        }
+
+        function gotoPage(pageNumber) {
+            console.log(pageNumber)
+            var searchValue = document.getElementById('searchInput').value;
+            window.location.href = "?page=" + pageNumber + "&nextInput=" + encodeURIComponent(searchValue);
+        }
+    </script>
+
+</div>
+</html>
+
+
+

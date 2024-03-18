@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title th:include="~{/include/header::titleFragment}">title</title>
+    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=83bfuniegk"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link th:href="@{/css/star.css}" rel="stylesheet">
+    <script type="text/javascript" src="/js/MarkerClustering.js"></script> <!-- 지도에 클러스터 적용하기 위해 필요한 js 파일 -->
+</head>
+<style>
+
+
+
+    #leftList {
+
+        padding-right: 20px; /* 스크롤이 겹치지 않도록 우측 여백 추가 */
+    }
+
+    #leftList::-webkit-scrollbar {
+        width: 5px; /* 스크롤바 너비 */
+        height: 30px;
+    }
+
+    #leftList::-webkit-scrollbar-thumb {
+        background-color: #888; /* 스크롤바 색상 */
+        border-radius: 5px; /* 스크롤바 모서리 둥글게 만듦 */
+        height: 200px;
+    }
+
+    #leftList::-webkit-scrollbar-track {
+        background-color: #f1f1f1; /* 스크롤바 트랙 배경색 */
+    }
+
+
+    #content {
+        /*width: 100%;*/
+        height: calc(100vh - 88px);
+        top: 86px;
+        border: 1px solid #003458;
+        position: relative;
+
+    }
+
+    #leftList {
+        height: 100%;
+        width: 338px;
+        border-right: solid 1px black;
+        overflow-x: hidden;
+        overflow-y: auto;
+        float: left;
+        box-sizing: border-box;
+    }
+
+    #map {
+        height: 100%;
+        width: calc(100% - 338px);
+        float: right;
+        box-sizing: border-box;
+
+    }
+
+    #category {
+        /*height: 44px;*/
+        /*display: flex;*/
+        justify-content: center;
+        border-bottom: solid 1px black;
+        margin-top: 1px;
+        /*margin-bottom: 30px;*/
+        padding-bottom: 8px;
+        overflow: hidden;
+    }
+    #category button {
+        font-size: 14px;
+        height: 40px;
+    }
+    #category ul {
+        padding-left: 16px;
+        list-style-type: none;
+    }
+    #category li {
+        display: inline;
+    }
+    #category li.filter {
+        font-size: 14px;
+    }
+    #category .filter3 {
+        display: flex;
+        justify-content: space-between;
+        padding-right: 22px;
+    }
+    #category .picked {
+        border: 1px solid #000;
+    }
+
+    #resultList .rest.tel, #resultList .rest.category {
+        font-size: 12px;
+        text-wrap: nowrap;
+    }
+    #resultList li.gray {
+        filter: grayscale(1);
+    }
+
+
+    .hovered {
+        background-color: #f0f0f0; /* 호버시 변경할 색상 */
+    }
+
+
+
+</style>
+
+<body>
+
+<header th:include="~{/include/header::headerFragment}">
+    head
+</header>
+
+
+<div id="content">
+    <div id="leftList">
+
+        <div id="category" onchange="sendSearchQuery()" onclick="chooseFilter(event)">
+            <ul class="filter1">
+                <li class="filter" value="1">평점 높은 순</li>
+                <li class="filter" value="2">리뷰 많은 순</li>
+                <li class="filter" value="3">예약 많은 순</li>
+            </ul>
+            <hr>
+            <h4 style="text-align: center;">검색 상세조건</h4>
+            <p style="margin-left:19px; margin-top: -1px; margin-bottom: -14px; font-size: 10px" >업태</p>
+            <!--업태-->
+            <ul class="filter2">
+                <select name="filter2" class="filter picked" style="width: 285px; text-align: center; text-indent: 18px">
+                    <option>전 체</option>
+                    <option>한 식</option>
+                    <option>양 식</option>
+                    <option>일 식</option>
+                    <option>중 식</option>
+                    <option>디 저 트</option>
+                </select>
+            </ul>
+            <p style="margin-left:19px; margin-top: -5px; margin-bottom: -14px; font-size: 10px" >주소</p>
+            <!--도로명 주소-->
+            <ul class="filter3">
+                <li class="filter" value="0">전체</li>
+                <li class="filter" value="1">서구</li>
+                <li class="filter" value="2">중구</li>
+                <li class="filter" value="3">동구</li>
+                <li class="filter" value="4">북구</li>
+                <li class="filter" value="5">남구</li>
+            </ul>
+        </div>
+
+        <ul id="resultList" style="list-style: none;">
+
+            <li th:each="rest : ${list}" style="border-bottom: solid 1px black; display: flex; align-items: center; cursor: pointer; margin-bottom: 28px;"
+                th:onclick="|javascript:mapToPoint(event, ${rest.restLatitude}, ${rest.restLongitude} , ${rest.restNo} )|"
+                th:class="${rest.restStatus == 'NORMAL' ? '':'gray'}" >
+
+                <div style="display: flex">
+                <img th:attr="mysrc=${rest.base64Image}" style="width: 100px; height: 120px; margin-right: 10px; margin-bottom: 20px">
+
+                <div style="display: flex; flex-direction: column;">
+                    <h2 style="font-size: 16px" th:text="${rest.restName} "></h2>
+                    <p class="rest tel" th:text="${rest.restTel} "></p>
+                    <p class="rest category" th:text="${rest.restCategory} "></p>
+                    <p class="rest tel">
+                        <th:block th:each="addrItem : ${#strings.arraySplit( rest.restAddr, ' ')}">
+                            <th:block th:text="${addrItemStat.index >= 1 ? addrItem : ''}"></th:block>
+                        </th:block>
+                    </p>
+
+
+<!--                    <div class="startD" style="display: flex" th:if="${rest.getRevScore()!=null?rest.getRevScore(): 0 }" >-->
+<!--                        <div class="startD" style="display: flex" th:if="${rest.getRevScore()!=null and ''!=rest.reserveCount and 0!=rest.reserveCount}">-->
+
+<!--                        <span>⭐</span><p  style="font-weight: bold; font-size: 15px" th:text="${rest.getRevScore()}"></p><span style="margin-left: 5px; font-size: 15px" th:text="'    예약수 '+${rest.reserveCount}"></span>-->
+<!--                        <span>⭐</span><p  style="font-weight: bold; font-size: 15px" th:text="${rest.getRevScore()}"></p>-->
+<!--                    </div>-->
+                    <div class="startD" style="display: flex" th:if="${rest.getRevScore()!=null}">
+                        <span>⭐</span><p style="font-weight: bold; font-size: 15px" th:text="${rest.getRevScore()}"></p>
+                    </div>
+
+
+                    <!--/*[+                    <p th:if="${#fields.hasErrors('reserveCount')}">   +]*/-->
+                    <ul th:each="err: ${#fields.allErrors}">
+                        <li th:text="${err}"></li>
+                    </ul>
+
+<!--                    <th:block th:if="${''!=rest.reserveCount && 0!=rest.reserveCount}">-->
+<!--                        <p th:text="'예약수 : '+${rest.reserveCount}"></p>-->
+<!--                    </th:block>-->
+                    <div style="margin-bottom: 20px">
+                    <a id="locationB" type="button" th:text="상세보기"
+                       th:href="${rest.restStatus == 'NORMAL' ? '/detail?restNo='+rest.restNo:'javascript:void(0)'}"
+                       onclick='onClickDetailGray(this)'></a>
+                    </div>
+                </div>
+
+               </div>
+
+            </li>
+
+            <th:block th:if="${list.isEmpty()}" >
+                <li>검색 결과가 없습니다.</li>
+            </th:block>
+
+        </ul>
+
+
+
+    </div>
+
+    <div id="map">
+
+    </div>
+</div>
+<script map >
+    gmap = {};
+
+        let map = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(35.86868025887658, 128.5987419727357),
+        zoom: 13,
+        // 지도 좌측 위쪽 줌인, 줌아웃 버튼 생성
+        zoomControl: true, // 줌인, 줌 아웃 버튼을 만들 것인가
+        zoomControlOptions: { // 버튼위치 및 스타일 지정
+            position: naver.maps.Position.TOP_LEFT,
+            style: naver.maps.ZoomControlStyle.SMALL
+        }
+    })
+        gmap = map;
+
+    function onClickDetailGray( one ) {
+        if ( one.closest( "li" ).classList.contains( "gray" ) )
+        {
+            alert( "폐점된 가게입니다.")
+        }
+    }
+    function redirectDetail(event, id) {
+        if ( event.target.closest( "li" ).classList.contains( "gray" ) )
+        {
+            alert( "폐점된 가게입니다.")
+            return;
+        }
+        window.location.href = '/detail?restNo=' + id;
+    }
+
+
+    document.querySelectorAll('#restaurantList li').forEach(function (item) {
+        item.addEventListener('mouseover', function () {
+            let restaurantName = this.querySelector('p:first-child').textContent;
+            alert(restaurantName);
+        });
+    });
+
+
+
+/*
+    function redirectToManyReview() {
+        // 검색어를 가져옴
+        var keyword = document.getElementById("searchBar").value;
+
+        if (!keyword) {
+            keyword = "";
+        }
+        // URL을 생성하고 manyReview 페이지로 이동
+        var url = "http://localhost:8080/manyReview?keyword=" + keyword;
+        url = "http://localhost:8080/search?" + getSearchWord();
+        window.location.href = url;
+    }
+*/
+
+
+
+</script>
+
+
+<script map th:inline="javascript">
+
+    let focusMarkerTemplate =`
+            <div style="padding:5px;border:1px solid black; border-radius: 20px; background-color: white;">
+            <img src="/img/marker_on.png" alt="marker" style="margin:0; padding:0; display:block; max-width:none; max-height:none;-webkit-user-select:none; position:absolute; width:25px; height:25px;" />
+            <span style="margin-left: 25px;">$restName$ | $restCategory$</span>
+            </div>
+        `; // 마커에 mouseover 했을 때 적용할 html
+    let normalMarker = `
+        <img src="/img/marker.png" alt="marker" style="margin:0; padding:0; display:block; max-width:none; max-height:none;-webkit-user-select:none; position:absolute; width:25px; height:25px;" />
+        `; // 마커에 mouseout 했을 때 적용할 html(기본 마커 스타일)
+    let prevFocusMarker = null;
+
+    let markers = [];
+
+
+    // 마커 생성 및 이벤트 핸들러 등록
+    [# th:each = "rest : ${list}"]
+    {
+        // let info = []
+        let info = [ [[${rest.restName}]], [[${rest.restCategory}]] ]
+
+        let marker = new naver.maps.Marker({
+            position: new naver.maps.LatLng([[${rest.restLatitude}]], [[${rest.restLongitude}]]),
+            icon : {
+                content: normalMarker //size, anchor 미적용
+            },
+            map: map
+            , restNo : [[${rest.restNo}]]
+            , nameData : [ [[${rest.restName}]], [[${rest.restCategory}]] ]
+            , posData : [ [[${rest.restLatitude}]], [[${rest.restLongitude}]] ]
+        });
+        //
+        // // 마커 클릭 이벤트
+        // naver.maps.Event.addListener(marker, "mouseover", function (e) {
+        //     marker.setIcon({
+        //         content: focusMarkerTemplate.replace( '$restName$', marker.posData[0] ).replace( '$restCategory$', marker.posData[1] ) // mouseover 했을 때 마커에 html 적용
+        //     });
+        // });
+        //
+        // naver.maps.Event.addListener(marker, "mouseout", function (e) {
+        //     marker.setIcon({
+        //         content: normalMarker // mouseout 했을 때 마커에 html 적용
+        //     });
+        // });
+        //
+        // // 마커 클릭 시 해당 마커를 지도 가운데로 이동시킴(부드럽게 이동)
+        // naver.maps.Event.addListener(marker, 'click', function() {
+        //     map.panTo(new naver.maps.LatLng([[${rest.getRestLatitude()}]], [[${rest.getRestLongitude()}]]));
+        // });
+
+        setMarker(marker)
+        markers.push(marker);
+    }
+    [/]
+
+    // 클러스터 상태 표시를 위한 마커 선언
+    let htmlMarker1 = {
+            content: '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/img/cluster-marker-1.png);background-size:contain;"></div>',
+
+        };
+    let htmlMarker2 = {
+        content: '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/img/cluster-marker-2.png);background-size:contain;"></div>',
+
+    };
+    let htmlMarker3 = {
+        content: '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/img/cluster-marker-3.png);background-size:contain;"></div>',
+
+    };
+    let htmlMarker4 = {
+        content: '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/img/cluster-marker-4.png);background-size:contain;"></div>',
+
+    };
+    let htmlMarker5 = {
+        content: '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/img/cluster-marker-5.png);background-size:contain;"></div>',
+
+    };
+
+    let markerClustering = new MarkerClustering({
+        minClusterSize: 2,
+        maxZoom: 18,
+        map: map,
+        markers: markers,
+        disableClickZoom: false, // 클러스터 마커 클릭 시 확대 허용 (false)
+        gridSize: 120,
+        icons: [htmlMarker1, htmlMarker2, htmlMarker3, htmlMarker4, htmlMarker5], // 밀집도에 따라 각각의 마커 적용
+        indexGenerator: [10, 20, 50, 100, 150], // 가게 수 많아지면 범위 변경
+        stylingFunction: function(clusterMarker, count) {
+            let clusterElement = clusterMarker.getElement();
+            let firstChildDiv = clusterElement.querySelector('div:first-child');
+            if (firstChildDiv) {
+                firstChildDiv.textContent = count; // 클러스터 중간에 밀집된 수 표시
+            }
+        }
+    });
+
+    // 화면 움직일 때 마다 마커 다시 그리기
+    naver.maps.Event.addListener(map, 'idle', function() {
+        updateMarkers(map, markerClustering);
+    });
+
+    function setMarker(marker, focusIcon ) {
+        // console.log(marker.getPosition())
+
+        // 마커 클릭 이벤트
+        naver.maps.Event.addListener(marker, "mouseover", function (e) {
+            // console.log( marker.posData )
+            // console.log( marker.posData[0] )
+            // console.log( marker.posData[1] )
+            // console.log( focusMarkerTemplate )
+            // console.log( focusMarkerTemplate.replace( '$restName$', marker.posData[0] ) )
+            // console.log( focusMarkerTemplate.replace( '$restName$', marker.posData[0] ).replace( '$restCategory$', marker.posData[1] ) )
+            marker.setIcon({
+                content: focusMarkerTemplate.replace( '$restName$', marker.nameData[0] ).replace( '$restCategory$', marker.nameData[1] ) // mouseover 했을 때 마커에 html 적용
+            });
+        });
+
+        // console.log( bInit, marker.icon.content )
+        //
+        // console.log ( naver.maps.Event )
+        // if ( naver.maps.Event.clearListeners(marker, 'mouseout'))
+            naver.maps.Event.clearListeners(marker, 'mouseout');
+        naver.maps.Event.addListener(marker, "mouseout", function (e) {
+            // console.log( !focusIcon, marker.icon.content )
+            if ( !focusIcon ) {
+                marker.setIcon({
+                    content: normalMarker // mouseout 했을 때 마커에 html 적용
+                });
+            }
+            else
+                marker.setIcon(focusIcon);
+        });
+
+        // 마커 클릭 시 해당 마커를 지도 가운데로 이동시킴(부드럽게 이동)
+        naver.maps.Event.addListener(marker, 'click', function(event) {
+            map.panTo(new naver.maps.LatLng( marker.posData[0], marker.posData[1] ));
+        });
+    }
+
+    function updateMarkers(map, markers) {
+        let mapBounds = map.getBounds();
+        let marker, position;
+
+        for (var i = 0; i < markers.length; i++) {
+            marker = markers[i]
+            position = marker.getPosition();
+            setMarker(marker)
+            if (mapBounds.hasLatLng(position)) {
+                showMarker(map, marker);
+            } else {
+                hideMarker(map, marker);
+            }
+        }
+    }
+
+    function showMarker(map, marker) {
+        if (marker.getMap()) return;
+        marker.setMap(map);
+    }
+
+    function hideMarker(map, marker) {
+        if (!marker.getMap()) return;
+        marker.setMap(null);
+    }
+
+    function mapToPoint(event, lat, lng, restNo ) {
+        // event.preventDefault()
+        gmap.morph(new naver.maps.LatLng(lat, lng), 18);
+
+        let pointMarker = `
+            <img src="/img/point_marker_no.png" alt="marker" style="margin:0; padding:0; display:block; max-width:none; max-height:none;-webkit-user-select:none; position:absolute; width:30px; height:30px; z-index: 99;" />
+            `;
+
+        let oldMarker = markers.find( m=>m.restNo === restNo );
+        let mmm = { ...oldMarker, icon : {
+                content: pointMarker } }
+        // console.log( oldMarker, mmm )
+        let focusIcon = { content: pointMarker }
+        let marker = oldMarker;
+        // marker.icon = { content: pointMarker };
+        marker.setIcon( focusIcon );
+        // let marker = new naver.maps.Marker({ ...oldMarker,
+        //     icon : {
+        //     content: pointMarker //size, anchor 미적용
+        // }});
+        // let marker = new naver.maps.Marker({
+        //     position: new naver.maps.LatLng(lat, lng),
+        //     icon : {
+        //         content: pointMarker //size, anchor 미적용
+        //     },
+        //     map: map
+        // });
+        //
+        // console.log( marker )
+        marker.animation = naver.maps.Animation.BOUNCE;
+
+        setMarker(marker,focusIcon)
+        marker.setMap(gmap)
+
+        if ( prevFocusMarker && prevFocusMarker !== marker )
+        {
+            prevFocusMarker.animation = null;
+            prevFocusMarker.setIcon( {content: normalMarker } );
+            naver.maps.Event.clearListeners(prevFocusMarker, 'mouseout');
+            naver.maps.Event.addListener(prevFocusMarker, "mouseout", function (e) {
+                prevFocusMarker.setIcon({
+                    content: normalMarker // mouseout 했을 때 마커에 html 적용
+                })});
+            prevFocusMarker.setMap(gmap)
+        }
+        prevFocusMarker = marker;
+    }
+
+
+    function chooseFilter(event){
+        if (!event.target.classList.contains( "filter") )
+            return;
+        if ( (event.target.tagName === 'SELECT') )
+            return;
+
+        //     event.target.classList.toggle( "picked");
+        const classNamesBefore = Array.from(event.target.parentNode.children).map(child => child.className);
+        Array.from( event.target.parentNode.children ).forEach( e=>e.classList.toggle( "picked", e===event.target));
+        const classNamesAfter = Array.from(event.target.parentNode.children).map(child => child.className);
+        if ( JSON.stringify(classNamesBefore) !== JSON.stringify(classNamesAfter) )
+            event.currentTarget.dispatchEvent( new Event( "change") );
+
+    }
+</script>
+<script src="/js/imglazy.js"></script>
+</body>
+
+</html>

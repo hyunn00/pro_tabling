@@ -1,0 +1,294 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<div th:fragment="detailContent">
+    <link rel="stylesheet" href="../css/reservation.css">
+    <link rel="stylesheet" href="../css/star.css">
+
+    <style>
+       .startD li{
+            list-style: none;
+        }
+
+       button span.dropbutton{
+           top: 0px;
+           position: relative;
+           transition: transform 0.5s ease 0.0s;
+           display: inline-block;
+       }
+       button span.dropbutton.move1{
+           animation: btnDropMove1 0.3s;
+       }
+       button span.dropbutton.move2{
+           animation: btnDropMove2 0.3s;
+       }
+       button span.dropbutton.move3{
+           animation: btnDropMove3 0.3s;
+       }
+       button span.dropbutton.move4 {
+           animation: btnDropMove4 0.3s;
+       }
+       @keyframes btnDropMove1 {
+           0%{
+               transform: translateY( 0px );
+           }
+           100%{
+               transform: translateY( 28px );
+           }
+       }
+       @keyframes btnDropMove2 {
+           0%{
+               transform: translateY( -28px );
+           }
+           100%{
+               transform: translateY( -0px );
+           }
+       }
+       @keyframes btnDropMove3 {
+           0%{
+               transform: translateY( 0px );
+           }
+           100%{
+               transform: translateY( -28px );
+           }
+       }
+       @keyframes btnDropMove4 {
+           0%{
+               transform: translateY( 28px );
+           }
+           100%{
+               transform: translateY( 0px );
+           }
+       }
+    </style>
+    <div id="c">
+        <div id="main" style="margin-top: 100px; padding-bottom: 5px">
+            <div id="img-cont">
+                <img th:attr="mysrc=${dinning.base64Image}" alt="식당 이미지"/>
+            </div>
+            <div style="text-align: left; margin-left: 40px; padding-top: 10px;">
+                <h1 th:text="${dinning.restName}"></h1>
+                <!--/*[+
+                <ion-icon name="navigate-circle-outline"></ion-icon>
+                <p th:text="${dinning.restAddr}"></p><br>
+
+                <ion-icon name="call-outline"></ion-icon>
+                <p th:text="${dinning.restTel}"></p><br>
+
+                <ion-icon name="accessibility-outline"></ion-icon>
+                <p th:text="'자리 : ' + ${dinning.restSeat}"></p><br>
+
+                <ion-icon name="fast-food-outline"></ion-icon>
+                <p th:text="${dinning.restMenu}"></p><br>
+                <ion-icon name="list-outline"></ion-icon>
+                <p th:text="${dinning.restCategory}"></p><br>
+                +]*/-->
+
+                <p><ion-icon name="list-outline"></ion-icon>[[${dinning.restCategory}]]</p>
+                <p><ion-icon name="call-outline"></ion-icon>[[${dinning.restTel}]]</p>
+                <p style="display: inline-block"><ion-icon name="fast-food-outline"></ion-icon>
+                    <th:block th:if="${menuList.isEmpty()}">
+                        등록된 메뉴가 없습니다.
+                    </th:block>
+                    <th:block th:unless="${menuList.isEmpty()}">
+                        <th:block th:each="menu : ${menuList}" th:object="${menu}">
+                            <label class="menuName">[[*{getMenuName()}]]</label>:
+                            <label class="menuPrice">[[*{getMenuPrice()}]]</label> <th:block th:text="${!menuStat.last?'/':''}"></th:block>
+                        </th:block>
+                    </th:block>
+                </p>
+                <p><ion-icon name="accessibility-outline"></ion-icon><th:block th:text="${dinning.restSeat == null ? '현장 손님만 받는 매장입니다' : '예약가능한 자리 : '+dinning.restSeat}"></th:block></p>
+                <p><ion-icon name="navigate-circle-outline"></ion-icon>[[${dinning.restAddr}]]</p>
+                <br>
+            </div>
+
+            <!--/*[+
+            <button th:class="${dinning.restSeat == null ? 'no' : ''}" th:onclick="|location.href='@{/reserve/{restNo}(restNo=${dinning.restNo})}'|"
+                    th:text="${dinning.restSeat == null ? '예약불가' : '예약하기'}"></button>
+            +]*/-->
+            <th:block th:with="condition=${dinning.restSeat}!=null, nextLocate=${dinning.restNo}">
+                <th:block th:if="${condition}">
+                    <button th:onclick="openReservePage([[${nextLocate}]])" th:utext="|<span class='dropbutton'>예약가능</span>|" style="width: 104px;height: 41px;"  th:class="Tg7LZd" >
+                </th:block>
+                <th:block th:unless="${condition}">
+                    <button th:onclick="openReservePage([[${nextLocate}]])" th:utext="|<span class='dropbutton'>예약불가</span>|" class="Tg7LZd no" >
+                </th:block>
+                    </button>
+            </th:block>
+            <div class="reservePage" style="
+                height: 0;
+                overflow: hidden;
+                background-color: #f2f2f2;
+                /*padding: 10px;*/
+                transition: all 0.6s ease 0s;">
+                <div style="
+                    background-color: #fff;
+                    padding-top: 27px;
+                    padding-bottom: 12px;
+                "></div>
+            </div>
+            <h2 style="margin-top: 50px">찾아 오는 길</h2>
+            <div id="map">
+
+            </div>
+
+            <div style="text-align: left; margin-left: 40px;">
+                <h2>영업 정보</h2>
+                <p th:text="'영업 시간 : ' + ${dinning.restTime}"></p>
+                <p th:text="'휴무일 : ' + ${dinning.restOffDays}"></p>
+                <p th:text="'주차 정보 : ' +${dinning.restParking}"></p><br>
+            </div>
+
+            <div th:if="${!eventList.isEmpty()}" class="eventBox" style="margin: 0 40px">
+                <h2 style="text-align: left">이벤트</h2>
+                <ul class="eventItems">
+                    <th:block th:each="event : ${eventList}" >
+                        <li class="eventItem"  style="width:230px !important;">
+                            <a th:href="@{/event/detail/{eventNo}(eventNo=${event.getEventNo()})}">
+                                <div class="eventImg" style="width:230px !important;">
+                                    <th:block th:if="${event.getEventImg() != null}">
+                                        <img th:src="'data:image/jpeg;base64,' + ${event.getBase64Image()}"  style="width:230px !important;">
+                                    </th:block>
+                                    <th:block th:unless="${event.getEventImg() != null}">
+                                        <img src="/img/no_image.png"  style="width:230px !important;">
+                                    </th:block>
+                                </div>
+                                <div class="eventDesc">
+                                    <p class="txt1">[ [[${event.getRestNo().getRestName()}]] ] [[${event.getEventTitle()}]]</p>
+                                    <p class="txt2">[[${event.getEventStartTime()}]] ~ [[${event.getEventEndTime()}]]</p>
+                                </div>
+                            </a>
+                        </li>
+                    </th:block>
+                </ul>
+            </div>
+
+            <div style=" margin: 40px 40px 10px 24px; text-align: left; " >
+                <div style="border-bottom: solid 1px black">
+                    <h2 style="padding-top: 10px; padding-left: 10px" th:text="${list.size()} + '명의 방문자가 평가 '"></h2>
+
+                    <div class="startD" style="display: flex">
+
+                        <li style="font-size: 12px" class="rating">
+                            <div class="ratefillGray"></div>
+                            <div class="ratefillYellow"
+                                 th:style="'width: ' + ${reg*16} + 'px'"></div>
+                            <input type="radio" name="revScore" id="rating1" value="10" class="rate_radio"
+                                   title="1점">
+                            <label for="rating1"></label>
+                            <input type="radio" name="revScore" id="rating2" value="20" class="rate_radio"
+                                   title="2점">
+                            <label for="rating2"></label>
+                            <input type="radio" name="revScore" id="rating3" value="30" class="rate_radio"
+                                   title="3점">
+                            <label for="rating3"></label>
+                            <input type="radio" name="revScore" id="rating4" value="40" class="rate_radio"
+                                   title="4점">
+                            <label for="rating4"></label>
+                            <input type="radio" name="revScore" id="rating5" value="50" class="rate_radio"
+                                   title="5점">
+                            <label for="rating5"></label>
+                            <input type="hidden" id="selectedRevScore" name="selectedRevScore" value="">
+                        </li>
+                    </div>
+
+
+<!--                    <p style="padding-left: 10px" th:text="'총 평점 :  ' +${#strings.substring(reg, 0, 3)}"></p>-->
+                </div>
+
+                <div id="review">
+                    <div th:replace="~{/include/detail_review_template::detailReviewTemplate(${list},0)}"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="/js/imglazy.js"></script>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script>
+
+        // document.querySelector( 'button span.dropbutton' ).addEventListener( 'transitionend', function(event){
+        document.querySelector( 'button span.dropbutton' ).addEventListener( 'animationend', function(event){
+            if ( this.classList.contains("move3"))
+            {
+                this.innerText = this.originBtnText;
+                this.classList.add( 'move4' );
+            }
+            if ( this.classList.contains("move1"))
+            {
+                this.innerText = "취소";
+                this.classList.add( 'move2' );
+            }
+        });
+        function openReservePage( nextLocate ) {
+            const reserveDiv = document.querySelector( '.reservePage' );
+            const btnSpan = document.querySelector( 'button span.dropbutton' );
+            if ( true === btnSpan.classList.toggle( 'move' ) )
+            {
+                btnSpan.originBtnText = btnSpan.textContent;
+                btnSpan.classList.remove( 'move3', 'move4' )
+                btnSpan.classList.add( 'move1' )
+            }
+            else
+            {
+                btnSpan.classList.remove( 'move1', 'move2' )
+                btnSpan.classList.add( 'move3' )
+            }
+
+            const innerDiv = reserveDiv.querySelector( 'div' );
+            fillReservePage( innerDiv, nextLocate, ()=>{
+                reserveDiv.style.height  = reserveDiv.style.height === '0px' ? (innerDiv.clientHeight+innerDiv.plusPadding)+'px' : '0px'; //'570px' 237px
+                reserveDiv.style.padding = reserveDiv.style.height === '0px' ? '0px' : '10px' ;
+            } );
+        }
+        function fillReservePage( reserveDiv, nextLocate, callback ){
+            if ( !!reserveDiv.textContent )
+            {
+                callback();
+                return;
+            }
+
+
+            const nextUrl = "/reserve/" + nextLocate;
+            fetch( nextUrl )
+                .then(resp => resp.text())
+                .then(data => {
+                    let doc = new DOMParser().parseFromString(data, 'text/html');
+                    if ( !!doc.querySelector( "form[action^='/login']" ) )
+                    {
+                        doc.querySelectorAll('style').forEach( style => {
+                            document.head.appendChild(
+                                Object.assign( document.createElement('style'), {
+                                    innerHTML: style.innerHTML
+                        }))});
+
+                        const newLoginDiv = document.createElement('div');
+                        const newDiv = Object.assign( document.createElement('div'), {
+                            innerHTML: `<h2>로그인이 필요한 서비스입니다.</h2>`}
+                        );
+                        [ newDiv , ...[ ...doc.querySelectorAll( 'body>div' )].slice(1) ].forEach(
+                            elem => newLoginDiv.appendChild( elem )
+                        );
+
+                        reserveDiv.innerHTML = newLoginDiv.innerHTML;
+                        reserveDiv.plusPadding = 20;
+                    }
+                    else
+                    {
+                        reserveDiv.innerHTML = doc.querySelector('body').innerHTML;
+                        reserveDiv.plusPadding = 0;
+                    }
+
+                    doc.querySelectorAll('script').forEach( script=> eval( script.textContent ) );
+
+                    callback();
+            });
+        }
+
+    </script>
+    <script th:inline="javascript">
+        localStorage.setItem('visit' +[[${dinning.restNo}]], JSON.stringify( {
+            name: [[${dinning.restName}]],
+            time: new Date().getTime()
+        }));
+    </script>
+</div>
+</html>

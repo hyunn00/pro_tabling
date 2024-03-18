@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>폐점 신청 가게 목록</title>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<div th:fragment="managerContent">
+    <div id="right2">
+
+        <table id="dinningCloseTable2" style="text-align: center;">
+            <thead>
+            <tr>
+                <th>리뷰 번호</th>
+                <th>신고된 아이디</th>
+                <th>신고한 가게</th>
+                <th>점주</th>
+                <th>상태 변경</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="list : ${list}" >
+
+                <td th:text="${list.id}" th:onclick="'javascript:reviewDetail(\'' + ${list.id} + '\')'"></td>
+                <td th:text="${list.userNo != null ? list.userNo.userId : ''}" th:onclick="'javascript:reviewDetail(\'' + ${list.id} + '\')'"></td>
+                <td th:text="${list.restNo != null ? list.restNo.restName : ''}" th:onclick="'javascript:reviewDetail(\'' + ${list.id} + '\')'"></td>
+                <td th:text="${list.restNo != null && list.restNo.userNo != null ? list.restNo.userNo.userId : ''}" th:onclick="'javascript:reviewDetail(\'' + ${list.id} + '\')'"></td>
+
+                <td>
+                    <form onsubmit="return confirmClose(this)" action="RevManager" method="post">
+                        <input type="hidden" name="id" th:value="${list.id}">
+                        <div class="custom-select">
+                            <select name="status" style="width: 90px">
+                                <option value="NORMAL" th:selected="${list.revStatus == 'NORMAL'}">일반</option>
+                                <option value="INSULT" th:selected="${list.revStatus == 'INSULT'}">욕설 및 비방</option>
+                                <option value="FALSE_EXAGGERATION" th:selected="${list.revStatus == 'FALSE_EXAGGERATION'}">허위 및 과장</option>
+                                <option value="WRONG_IMAGE" th:selected="${list.revStatus == 'WRONG_IMAGE'}">잘못된 사진</option>
+                                <option value="ADVERTISEMENT" th:selected="${list.revStatus == 'ADVERTISEMENT'}">광고</option>
+                                <option value="OTHER" th:selected="${list.revStatus == 'OTHER'}">기타</option>
+                            </select>
+                            <button type="submit">변경</button>
+                        </div>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="holdDetail">
+        <ion-icon id="closeModalIcon" name="close-outline"></ion-icon>
+
+        <div></div>
+    </div>
+
+
+    <script>
+
+        function reviewDetail(id) {
+
+            fetch( '/manager/managerPage_ReviewDetail?id=' + id )
+                .then( resp => resp.text())
+                .then(data=> {
+                    let doc = new DOMParser().parseFromString(data, 'text/html');
+                    document.querySelector("#holdDetail div").innerHTML = doc.querySelector('.modalD2').innerHTML;
+                    document.getElementById("holdDetail").style.display = "block";
+
+                    document.addEventListener('click', function (event) {
+                        var modal = document.getElementById('holdDetail');
+                        if (!modal.contains(event.target)) {
+                            modal.style.display = 'none';
+                        }
+                    });
+                })
+        }
+
+
+        function confirmClose(form) {
+            event.preventDefault()
+            swal({
+                title: "리뷰 상태를 변경 하시겠습니까?",
+                text: "변경 하시려면 확인을 눌러주세요.",
+                icon: "warning",
+                buttons: {
+                    confirm: {
+                        text: "변경",
+                        value: true,
+                        visible: true,
+                        className: "confirm-button",
+                        closeModal: false // 창이 닫히지 않도록 설정
+                    },
+                    cancel: {
+                        text: "취소",
+                        value: null,
+                        visible: true,
+                        className: "cancel-button",
+                        closeModal: true,
+                    }
+                },
+                dangerMode: false,
+            })
+                .then((willClose) => {
+                    if (willClose) {
+                        swal("Success!", "변경 되었습니다!", "success")
+                            .then(function () {
+
+                                // document.querySelector(this).submit();
+                                form.submit();
+                            });
+                    } else {
+                        swal("취소되었습니다.")
+                    }
+                });
+            // 폼 제출을 여기서 직접 호출하지 않고, 확인 버튼을 클릭한 경우에만 폼 제출
+        }
+
+    </script>
+</div>
+</html>

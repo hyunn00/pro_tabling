@@ -1,0 +1,87 @@
+body {
+    background-color: #f2f2f2;
+}
+#content-container {
+    width: 1000px;
+    margin: 100px auto;
+    padding:10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.tap_box {
+    display: block;
+    position : relative;
+    width : 960px;
+    margin : 0 auto;
+    top : 50px;
+    letter-spacing: -0.05em;
+}
+
+.tap_box h2 {
+    font-size : 25px;
+    font-weight : 500;
+    margin-bottom: 20px;
+}
+
+.taps {
+    width : 100%;
+    text-align: center;
+    margin : 0 auto;
+    padding : 0;
+    display: block;
+    position : relative;
+    z-index : 2;
+    list-style: none;
+    height : 50px;
+}
+
+.taps li {
+    float : left;
+    text-align: center;
+    width : 33.2%;
+    margin : 0;
+    padding : 0;
+    height : 50px;
+    border : 1px #ddd solid;
+    margin-right: -1px;
+    overflow: hidden;
+    & a {
+        cursor : pointer;
+        color : #222;
+        font-size: 18px;
+        font-weight: 300;
+        line-height: 50px;
+    }
+    &.active {
+        border: 1px #FF6900 solid;
+        position: relative;
+        z-index: 2;
+    }
+    &.active a {
+        color: #FF6900;
+        font-weight: 500;
+    }
+}
+
+.content_section {
+    position : relative;
+    width : 960px;
+    margin: 90px auto 50px;
+    padding : 0;
+}
+
+.content_section section {
+    margin-top: 50px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 27px;
+    & h3 {
+        padding : 30px 0;
+    }
+    & b {
+        padding : 15px 0;
+    }
+}

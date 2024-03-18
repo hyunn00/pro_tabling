@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>가게 추가</title>
+</head>
+
+<div th:fragment="managerContent">
+    <div id="right2">
+
+        <style>
+            .container {
+                display: flex;
+                justify-content: center;
+            }
+        </style>
+
+        <div class="formDiv" style="width: 1000px">
+            <form id="form2" action="/manager/managerPage_JrestAdd" method="post" enctype="multipart/form-data"
+                  style="display: flex">
+
+                <div style="flex: 1; width: 300px; height: 400px; text-align: right; margin-right: 30px">
+                    <img id="preview" src="/images/rest.png" style="width: 300px; height: 400px; margin-right: 160px" alt="">
+                    <br>
+                    <input type="file" name="file" id="file" style="margin-right: 139px"><br>
+                </div>
+
+                <div style="flex: 1; width: 500px">
+                    <!--                <p><label>번호 </label><input type="text" name="restNo"></p>-->
+                    <p><label>가게명 </label><input type="text" name="restName" id="restName"></p>
+                    <p><label>주소 </label><input type="text" name="restAddr" id="restAddr"></p>
+                    <p><label>전화번호 </label><input type="text" name="restTel" id="restTel"></p>
+                    <p><label>좌석 수 </label><input type="text" name="restSeat" id="restSeat"></p>
+                    <p><label>영업 시간 </label><input type="text" name="restTime" id="restTime"></p>
+                    <p><label>휴무 일정 </label><input type="text" name="restOffDays" id="restOffDays"></p>
+                    <p><label>주차장 </label><input type="text" name="restParking" id="restParking"></p>
+                    <p><label>메뉴 </label><input type="text" name="restMenu" id="restMenu"></p>
+                    <p><label>업태 </label><input type="text" name="restCategory" id="restCategory"></p>
+                    <p><label>위도 </label><input type="text" name="restLatitude" id="restLatitude"></p>
+                    <p><label>경도 </label><input type="text" name="restLongitude" id="restLongitude"></p>
+                    <!--                <p><label>가게 이미지 : </label><input type="file" name="file"></p>-->
+                    <p><label>평점 </label><input type="text" name="restScore" id="restScore"></p>
+                    <p><label>소개글 </label><input type="text" name="restDescription" id="restDescription"></p>
+                    <!--        <label>가게 등록일 : <input type="text" name="restStartDate"></label><br>-->
+<!--                    <input type="hidden" name="restStatus" id="restStatus" value="NORMAL">-->
+                </div>
+            </form>
+        </div>
+        <br><br>
+        <div class="container" style="text-align: center">
+            <button id="submit" class="fifth" type="submit">등록</button>
+        </div>
+    </div>
+
+    <script>
+        // 파일 입력란의 변경 이벤트를 감지하여 이미지를 표시하는 함수
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    document.getElementById('preview').setAttribute('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        document.getElementById('file').addEventListener('change', function () {
+            previewImage(this);
+        });
+
+        // document.getElementById("submit").addEventListener("click", function (event) {
+        //     document.getElementById("form3").submit(); // 폼 제출
+        // });
+
+        document.getElementById("submit").addEventListener("click", function (event) {
+            const restName = document.getElementById('restName').value;
+            const restAddr = document.getElementById('restAddr').value;
+            const restTel = document.getElementById('restTel').value;
+            const restSeat = document.getElementById('restSeat').value;
+            const restTime = document.getElementById('restTime').value;
+            const restOffDays = document.getElementById('restOffDays').value;
+            const restParking = document.getElementById('restParking').value;
+            const restMenu = document.getElementById('restMenu').value;
+            const restCategory = document.getElementById('restCategory').value;
+            const restLatitude = document.getElementById('restLatitude').value;
+            const restLongitude = document.getElementById('restLongitude').value;
+            const restScore = document.getElementById('restScore').value;
+            const restDescription = document.getElementById('restDescription').value;
+
+            if (restName === '' || restAddr === '' || restTel === '' || restSeat === '' || restTime === ''
+                || restOffDays === '' || restParking === '' || restMenu === '' || restCategory === '' || restLatitude === ''
+                || restLongitude === '' || restScore === '' || restDescription === '') {
+                swal('모든 항목을 입력하세요 :)');
+                return;
+            }
+
+            swal({
+                title: "등록하시겠습니까?",
+                text: "추가한 내용을 확인하고 등록하시겠습니까?",
+                icon: "info",
+                buttons: {
+                    confirm : {
+                        text: "등록",
+                        value: true,
+                        visible: true,
+                        className: "confirm-button",
+                        closeModal: true
+                    },
+                    cancel : {
+                        text : "취소",
+                        value : null,
+                        visible : true,
+                        className: "cancel-button",
+                        closeModal : true,
+                    }
+                },
+                dangerMode: false,
+            })
+                .then((willAdd) => {
+                    if (willAdd) {
+                        swal("Success!", restName + " 의 가게 정보가 등록 되었습니다.", "success")
+                            .then(function (){
+                                document.getElementById("form2").submit();
+                            });
+                    } else {
+                        swal("등록이 취소 되었습니다.")
+                    }
+                });
+        });
+    </script>
+</div>
+
+
+</html>

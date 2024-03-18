@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{owner/myPage_layout}">
+
+<th:block th:fragment="content">
+    <div class="top_content">
+        <h3 id="headline">예약 대기 목록</h3>
+        <div class="selector">
+            <select id="reservPeriod">
+                <option value="today">오늘 예약 목록</option>
+                <option selected value="future">예약 대기 목록</option>
+                <option value="past">지난 예약 목록</option>
+            </select>
+        </div>
+    </div>
+    <div id="future" class="blockDiv">
+        <div class="table-item">
+            <ul>
+                <li>예약 번호</li>
+                <li>예약 시간</li>
+                <li>예약 인원</li>
+                <li>룸 타임</li>
+                <li class="comment">비고</li>
+                <li>예약 상태</li>
+            </ul>
+        </div>
+        <th:block th:if="${mapCount.get(1) == null}" >
+            <div style="width:100%; text-align: center; margin : 50px 0;">
+                <h3>죄송합니다.</h3>
+                <p>예약 대기 목록이 없습니다.</p>
+            </div>
+        </th:block>
+        <th:block th:each="reserv : ${reserveList}" th:object="${reserv}">
+            <th:block th:if="*{getDateType()==1}">
+                <div class="table-item">
+                    <ul class="table-preview">
+                        <li th:text="*{getRes_no()}"></li>
+                        <li th:text="*{#temporals.format(getResTime(), 'yyyy/MM/dd HH:mm')}"></li>
+                        <li th:text="*{getRes_guest_count()}"></li>
+                        <li th:text="*{getRes_table_type() == 'true' ? '룸' : '일반'}"></li>
+                        <li class="comment" th:text="*{getRes_comment()}"></li>
+                        <li th:text="*{getReservationStatusEnum().getName()}"></li>
+                    </ul>
+                    <div class="table-container">
+                        <div class="formDiv">
+                            <p><label>예약자</label><input type="text" th:value="*{getUserNo().getUserName()}" readonly></p>
+                            <p><label>예약 등록 시간</label><input type="text" th:value="*{getRes_time_new()}" readonly></p>
+                            <p><label>비고</label><textarea readonly rows="3">[[*{getRes_comment()}]]</textarea></p>
+                        </div>
+                        <div class="formDiv reserv-process">
+                            <p><label>예약 처리</label><input type="button" value="수락" th:onclick="|complete(*{getRes_no()})|" style="height: auto;"></p>
+                            <p><label></label>
+                                <input type="text" placeholder="거절 사유를 입력해주세요" class="reason" th:value="*{getRes_rejection_reason() != null ? getRes_rejection_reason() : null}">
+                                <input type="button" value="거절" th:onclick="|cancel(this, *{getRes_no()})|" style="height: auto">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+        </th:block>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#reservPeriod').change(function(){
+                let selectedOption = $(this).val();
+                // 선택된 옵션에 따라 원하는 동작 수행
+                if (selectedOption === 'today') location.href='/owner/reservList';
+                if (selectedOption === 'future') location.href='/owner/futureList';
+                if (selectedOption === 'past') location.href='/owner/pastList';
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let tableItems = document.querySelectorAll('.table-preview');
+
+            tableItems.forEach(function (tableItem) {
+                tableItem.addEventListener('click', function () {
+                    let tableContainer = this.nextElementSibling;
+
+                    document.querySelectorAll('.table-container').forEach(function(container) {
+                        if (container !== tableContainer && container.style.display === 'flex')
+                            container.style.display = 'none'; // 다른 리스트를 닫음
+                    });
+
+                    if (tableContainer) {
+                        if (tableContainer.style.display === 'flex') {
+                            tableContainer.style.display = 'none';
+                        } else {
+                            tableContainer.style.display = 'flex';
+                        }
+                    }
+                });
+            });
+        });
+
+        function complete(resNo) {
+            if(confirm("예약을 수락하시겠습니까?")) {
+                location.href='/owner/resCompleted/'+resNo+'?url=/owner/futureList';
+            }
+        }
+
+        function noshow(resNo) {
+            if(confirm("예약시간에 오지 않은 손님에 대해 노쇼 처리하시겠습니까?")) {
+                location.href='/owner/resNoShow/'+resNo+'?url=/owner/futureList';
+            }
+
+        }
+
+        function cancel(btn, resNo) {
+            // let reason = document.getElementById("reason").value;
+            let reason = btn.previousElementSibling.value
+            if(reason) {
+                location.href = "/owner/resCancel/"+resNo+"/"+reason+'?url=/owner/futureList';
+            } else {
+                alert("거절 사유를 입력하지 않아 요청이 취소됩니다.")
+            }
+        }
+    </script>
+</th:block>
+</html>

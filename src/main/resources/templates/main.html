@@ -1,0 +1,316 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/" lang="ko">
+<head>
+    <title th:include="~{/include/header::titleFragment}">title</title>
+    <link th:href="@{/css/slider.css}" rel="stylesheet">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css" integrity="sha512-10/jx2EXwxxWqCLX/hHth/vu2KY3jCF70dCQB8TSgNjbCVAC/8vai53GfMDrO2Emgwccf2pJqxct9ehpzG+MTw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<style>
+    #mainH {
+
+        background: url("/img/mainbg.jpeg");
+        background-size: cover;
+        /*background-size: contain;*/
+        /*background-size: 90%;*/
+        height: 589px;
+        /*background-color: #f4f4f4;*/
+
+    }
+
+    html{
+        /*scroll-behavior: smooth;*/
+
+    }
+
+    .hi:hover::after {
+        content: "안녕~";
+        font-weight: bold;
+    }
+
+</style>
+
+<body>
+
+
+<!--<header th:include="~{/include/header::headerFragment}">-->
+<!--    head-->
+<!--</header>-->
+
+<div id="mainH">
+
+    <div th:include="~{/include/Mainheader::headerFragment}">
+        head
+    </div>
+
+
+    <div class="infoBox">
+        <div class="infoBoxA">
+<!--            <a href="/notice/noticeList">공지사항</a>-->
+            <a href="/notice/noticeList">공지사항</a>
+            <a href="/policy/service">이용약관</a>
+            <a href="/event/home">이벤트</a>
+<!--            <div class="tenor-gif-embed" data-postid="3484507763170497045" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/smol-illegally-smol-cat-cute-cat-boop-gif-3484507763170497045"></a>from <a href="https://tenor.com/search/smol-gifs">Smol GIFs</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>-->
+        </div>
+    </div>
+
+    <div style="width: 800px;margin : 0 auto; ">
+        <form th:action="@{/search}" method="get" >
+            <div class="searchBox" style="position: absolute; top: 400px;" >
+                <div style="text-align: center; " >
+                    <input id="searchBar" type="search" placeholder="음식 또는 식당명 입력" aria-label="Search"
+                           name="keyword" oninput=sendSearchQuery() th:value="${param.keyword}" autocomplete="off"
+                           style="width: 542px;
+                            /*box-shadow: rgba(0, 0, 0, 1) 0 0 6px 0;*/
+                            /*border-radius: 10px;*/
+                            background: white;
+                            text-indent: 20px;
+                            margin-left: 153px;
+                            margin-bottom: 50px;
+                            margin-top: -119px;
+                            outline: none;
+                            border: 0;
+                            ">
+
+                    <button id="searchBtn">
+                        <svg class="searIcon2" viewBox="0 0 20 20" onclick="toggleSearchForm()">
+                            <path d="M18.125,15.804l-4.038-4.037c0.675-1.079,1.012-2.308,1.01-3.534C15.089,4.62,12.199,1.75,8.584,1.75C4.815,1.75,1.982,4.726,2,8.286c0.021,3.577,2.908,6.549,6.578,6.549c1.241,0,2.417-0.347,3.44-0.985l4.032,4.026c0.167,0.166,0.43,0.166,0.596,0l1.479-1.478C18.292,16.234,18.292,15.968,18.125,15.804 M8.578,13.99c-3.198,0-5.716-2.593-5.733-5.71c-0.017-3.084,2.438-5.686,5.74-5.686c3.197,0,5.625,2.493,5.64,5.624C14.242,11.548,11.621,13.99,8.578,13.99 M16.349,16.981l-3.637-3.635c0.131-0.11,0.721-0.695,0.876-0.884l3.642,3.639L16.349,16.981z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div onclick="handleSearchItemClick(event)" style="display: none;">
+                    <ul>
+                        <li>추천 검색어</li>
+                        <li><i class="fa-solid fa-feather"></i><span name="식당">식당</span></li>
+                        <li><i class="fa-solid fa-link"></i> <span name="리시트">리시트</span></li>
+<!--                        <li><i class="fa-regular fa-calendar"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-question"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-sort"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-forward"></i></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-brands fa-product-hunt"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-power-off"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-brands fa-readme"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-arrow-left"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-certificate"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-crosshairs"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-recycle"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-regular fa-clone"></i><span name="연습">연습</span></li>-->
+                        <li><i class="fa-solid fa-user-clock"></i><span name="연습">연습</span></li>
+<!--                        <li><i class="fa-solid fa-terminal"></i><span name="연습">   연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-stopwatch"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-rotate"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-clock-rotate-left"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-caret-right"></i><span name="연습">연습</span></li>-->
+<!--                        <li><i class="fa-solid fa-share"></i><span name="연습">연습</span></li>-->
+                    </ul>
+                    <ul class="visit">
+                    </ul>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="hi" style="width: 40px; height: 110px;position: absolute; top:400px;right: 400px">
+
+    </div>
+
+</div>
+
+
+<div id="content" th:include="~{/include/content::contentFragment}">
+    head
+</div>
+
+<footer th:include="~{/include/footer::footerFragment}">
+    footer
+</footer>
+
+
+<button id="scroll-top" onclick="scrollTopFunction()">Top</button>
+
+<script>
+
+    let slideIndex = 0;
+    showSlides();
+
+    function showSlides() {
+        let slides = document.getElementsByClassName("mySlides");
+
+        slideIndex = Math.min(slides.length, (slideIndex + 1) % slides.length);
+
+            for (let i = 0; i < slides.length; i++)
+                slides[i].style.display = i === slideIndex ? "block" : "none";
+        //
+            setTimeout(showSlides, 2000); // 2초마다 이미지가 체인지됩니다
+            setTimeout(slideSlide, 2000)
+        }
+
+    function slideSlide() {
+
+        const listElements = document.querySelectorAll('.slideshow .background');
+
+        let target = null
+        listElements.forEach(function (element) {
+            // 요소의 위치와 화면의 높이를 비교하여 화면에 보이는 요소인지 확인
+            const elementTop = element.getBoundingClientRect().top;
+            const elementBottom = element.getBoundingClientRect().bottom;
+            const screenHeight = window.innerHeight || document.documentElement.clientHeight;
+            const elementHeight = element.getBoundingClientRect().height + 48;
+
+            // Element의 height가 화면을 가리면서 조건을 만족하지 않도록 함
+            if (elementTop < screenHeight && elementBottom - elementHeight > 0 && null === target) {
+                if (element.classList.contains("over")) {
+                    // target = undefined;
+                    return;
+                }
+                target = element;
+            }
+        });
+        if (!target)
+            return;
+
+        moveToSlide(target, 1);
+    }
+
+    document.addEventListener('mouseover', function (event) {
+        let slide = event.target.closest(".slideshow .background");
+        if (slide) {
+            let mouseLeaveHandler = function (event) {
+                slide.classList.remove("over")
+                this.removeEventListener('mouseleave', mouseLeaveHandler);
+            }
+
+            slide.classList.add("over");
+            slide.addEventListener('mouseleave', mouseLeaveHandler);
+        }
+
+        let review = event.target.closest(".reviewT");
+        if (review) {
+            let tip = review.querySelector(".overtip");
+            if (tip) {
+                let mouseLeaveHandler = function (event) {
+                    tip.style.opacity = "0";
+                    review.removeEventListener('mouseleave', mouseLeaveHandler);
+                }
+
+                tip.style.opacity = "1";
+                review.addEventListener('mouseleave', mouseLeaveHandler);
+            }
+        }
+    });
+
+    // <!--/*[+ function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); } +]*/-->
+
+    async function moveToSlide(slider) {
+        let slideIndex = (slider?.index);
+        const index = 1;
+        const slideWidth = 1008; //slider.clientWidth;
+        const newPosition = -slideWidth * index;
+
+
+        const SLIDE_SIZE = 4;
+        const selectedDivs = Array.from(slider.children).slice(0, SLIDE_SIZE);
+        if (1 === slideIndex)
+            selectedDivs.forEach(div => slider.appendChild(div));
+
+        slider.style.transition = "";
+        slider.style.transform = "";
+        await sleep(100)
+        slider.style.transition = "transform 0.5s ease";
+        slider.style.transform = `translateX(${newPosition}px)`;
+
+        slider.index = index;
+
+        // // transitionend 이벤트 핸들러 등록
+        // slider.addEventListener("transitionend", function(event) {
+        //     // transform transition 이 완료되면 콜백 함수 호출
+        //     if (event.propertyName === "transform") {
+        //         slideslideForward( slider );
+        //     }
+        //     // 핸들러는 한 번만 실행되도록 제거
+        //     slider.removeEventListener("transitionend", this);
+        // });
+    }
+
+    function slideslideForward(parentDiv) {
+        // parentDiv.style.transition = "";
+        // parentDiv.style.transform = "";
+        // 앞에서 0~5개의 div를 선택합니다.
+        // const selectedDivs = Array.from(parentDiv.children).slice(0, 5);
+        // selectedDivs.forEach(div => parentDiv.appendChild(div));
+    }
+
+    // 페이지의 스크롤 상태가 변경될 때 실행되는 코드
+    document.addEventListener('scroll', function () {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        let viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        let totalHeight = document.body.scrollHeight;
+        if (scrollTop + viewportHeight >= totalHeight) {
+            // let dataTemplate = '<div class="slideshow"><div class="background">$content$</div></div>';
+            // newDiv.innerHTML = dataTemplate.replace("$content$", doc.querySelector('body').innerHTML);
+            fetch("/homeSlide2")
+                .then(resp => resp.text())
+                .then(data => {
+                        let doc = new DOMParser().parseFromString(data, 'text/html');
+                        const newDiv = document.createElement("div");
+                        newDiv.innerHTML = doc.querySelector('body').innerHTML;
+                        const targetDiv = document.querySelector("div.footer_height");
+                        targetDiv.appendChild(newDiv);
+
+                    document.querySelectorAll( "img[mysrc]" ).forEach( e=>io2.observe(e))
+                    }
+                );
+        }
+    });
+
+
+</script>
+
+<script>
+    // "click!" 요소를 클릭했을 때 실행되는 함수
+    document.getElementById("clickText")?.addEventListener("click", function () {
+        // "click!" 요소 숨김 처리
+        document.getElementById("clickText").style.display = "none";
+        // "restName" 요소 표시
+        document.getElementById("restName").style.display = "block";
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        scrollFunction();
+    });
+
+    window.addEventListener("scroll", function() {
+        scrollFunction();
+    });
+
+    function scrollFunction() {
+        var scrollHeight = document.documentElement.scrollHeight;
+        var clientHeight = document.documentElement.clientHeight;
+        var scrollPosition = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+
+        if (scrollPosition > clientHeight / 10) {
+            document.getElementById("scroll-top").style.display = "block";
+        } else {
+            document.getElementById("scroll-top").style.display = "none";
+        }
+    }
+
+
+    function scrollTopFunction() {
+        // document.body.scrollTop = 0; // For Safari
+        // document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+        window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    })
+    }
+
+    document.querySelectorAll( "img[mysrc]" ).forEach( e=>io2.observe(e));
+
+    document.querySelector( ".searchBox ul.visit" ).addEventListener( "click", handleCloseSearchItems );
+
+</script>
+
+
+</body>
+</html>

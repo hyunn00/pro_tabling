@@ -1,0 +1,283 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{userPage/Layout_userPage2}">
+
+
+<th:block th:fragment="content">
+
+    <style>
+
+        .mypage_sidebar_nav {
+            color: gray;
+        }
+
+        #reviewSelect {
+            font-weight: bold;
+            color: black;
+            border-bottom: 2px solid black;
+        }
+
+        .rate_radio {
+            z-index: 20;
+            opacity: 1;
+            width: 60px;
+            height: 60px;
+            background-color: #a19f9f;
+            cursor: pointer;
+            position: absolute;
+            left: -999px;
+        }
+
+        .rate_radio + label {
+            /*border: 0.5px solid gray;*/
+            position: relative;
+            display: block;
+            float: left;
+            z-index: 10;
+            width: 59px;
+            height: 60px;
+            background-image: url("/img/starrate.png");
+            background-repeat: no-repeat;
+            background-size: 60px 60px;
+            cursor: pointer;
+        }
+
+        .rating .ratefillYellow {
+            background-color: #ff8;
+            height: 60px;
+            position: absolute;
+            width: 60px;
+            transition: width 0.3s;
+            z-index: 9;
+        }
+
+        .rating .ratefillGray {
+            position: absolute;
+            background-color: gray;
+            height: 60px;
+            width: 295px;
+            z-index: 1;
+        }
+
+        .reviewAddBtn {
+            background-color: #5c7191;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 5px;
+        }
+
+        .reviewAddBtn:hover {
+            background-color: #4c87dc;
+        }
+    </style>
+
+    <div style="display: flex; justify-content: center; margin-top: -132px">
+        <div style="display: flex; justify-content: center; background-color: #FFFFFF; width: 870px; height: 774px; border-radius: 14px; padding: 2% ">
+            <div class="mid">
+                <div style="padding: 23px">
+                    <div style="display: flex; justify-content: flex-start; flex-direction: column; margin-right: 1px; height: 412px">
+                        <input type="hidden" name="rate" id="rate" value="0"/>
+                        <div style="display: flex; flex-direction: column; align-items: center ">
+                            <form id="addRevForm" th:action="@{/user/updateReview/{revNo}(revNo=${review.get().id})}"
+                                  method="post"
+                                  enctype="multipart/form-data">
+                                <div style="display: flex; flex-direction: column; align-items: center ;margin-bottom: 10px"
+                                     class="file-container">
+                                    <h4><i class="fa-regular fa-star"></i> 별점과 이용경험을 남겨주세요! <i
+                                            class="fa-regular fa-star"></i></h4>
+                                    <p class="title_star" th:text="${review.get().getRestNo().restName}"
+                                       style="font-size: 17px;"></p>
+
+                                    <input hidden="hidden" name="revNo" th:value="${review.get().id}">
+                                    <input hidden="hidden" name="userNo" th:value="${review.get().getUserNo().userNo}">
+                                    <input hidden="hidden" name="restNo" th:value="${review.get().getRestNo().restNo}">
+                                    <input hidden="hidden" name="resNo" th:value="${review.get().getResNo().res_no}">
+                                    <input hidden="hidden" name="revWriteTime" th:value="${review.get().revWriteTime}">
+
+                                    <div class="rating">
+                                        <div class="ratefillGray"></div>
+                                        <div class="ratefillYellow"></div>
+                                        <input type="radio" name="revScore" id="rating1" value="10" class="rate_radio"
+                                               title="1점" th:checked="${review.get().revScore == 1.0}">
+                                        <label class="rate_label" for="rating1"></label>
+                                        <input type="radio" name="revScore" id="rating2" value="20" class="rate_radio"
+                                               title="2점" th:checked="${review.get().revScore == 2.0}">
+                                        <label class="rate_label" for="rating2"></label>
+                                        <input type="radio" name="revScore" id="rating3" value="30" class="rate_radio"
+                                               title="3점" th:checked="${review.get().revScore == 3.0}">
+                                        <label class="rate_label" for="rating3"></label>
+                                        <input type="radio" name="revScore" id="rating4" value="40" class="rate_radio"
+                                               title="4점" th:checked="${review.get().revScore == 4.0}">
+                                        <label class="rate_label" for="rating4"></label>
+                                        <input type="radio" name="revScore" id="rating5" value="50" class="rate_radio"
+                                               title="5점" th:checked="${review.get().revScore == 5.0}">
+                                        <label class="rate_label" for="rating5"></label>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; flex-direction: column;" class="reviewImgBox">
+                                    <input type="file" id="file" class="fileInput" name="file" accept="image/*" multiple
+                                           style="display: none" onclick="previewImage(this)">
+
+                                    <label id="imgLabel" for="file">
+                                        <img src="/img/camera.png"
+                                             style="width: 16px; height: 16px; margin-right: 5px">사진 첨부하기
+                                    </label>
+
+                                    <div style="margin: 20px 0">
+                                        <th:block
+                                                th:with="condition=${review.get().getRevStrImg()!=''}, strArray=${review.get().getRevStrImg()}">
+                                            <th:block th:if="${condition}">
+                                                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 1px;">
+                                                    <th:block th:each="item : ${#strings.arraySplit(strArray, ',')}">
+                                                        <img th:attr="mysrc=${item}"
+                                                             style="width: 180px; height: 160px; border: 1.6px solid #dddddd; background-size: cover;"
+                                                             id="preview"  class="preview" alt="">
+                                                    </th:block>
+                                                </div>
+                                            </th:block>
+                                            <th:block th:unless="${condition}">
+                                                <img th:if="${review.get().base64Image!=''}"
+                                                     th:src="'data:image/png;base64,' + ${review.get().base64Image}"
+                                                     alt="리뷰 이미지2"
+                                                     class="preview"
+                                                     style="width: 180px; height: 160px; border: 1.6px solid #dddddd; background-size: cover;"
+                                                     id="preview" />
+                                            </th:block>
+                                        </th:block>
+<!--                                        <img class="preview"-->
+<!--                                             style="width: 200px; height: 180px; border: 1.6px solid #dddddd; background-size: cover;"-->
+<!--                                             id="preview"-->
+<!--                                             th:src="'data:image/jpeg;base64,' + ${review.get().base64Image}"-->
+<!--                                             alt="">-->
+                                    </div>
+                                </div>
+
+                                <hr>
+                                <div>
+                                    <input th:if="${not #strings.isEmpty(review.get().resNo)}"
+                                           th:value="${review.get().resNo}"
+                                           name="resNo" th:hidden="true"/>
+                                    <input th:value="${review.get().getRestNo().restNo}" name="restNo"
+                                           th:hidden="true"/>
+                                </div>
+                                <div style="margin-top: 30px">
+                                            <textarea id="reviewContent" th:text="${review.get().revContent}"
+                                                      name="revContent" rows="5" cols="82"
+                                                      style="resize: none;"
+                                                      placeholder="식당의 위생상태, 맛, 서비스 등 이용하신 경험에 대한 솔직한 리뷰를 남겨주세요. (선택, 200자 내외)"
+                                                      oninput="limitTextarea(this, 200)"></textarea>
+                                </div>
+                                <div style="display: flex; justify-content: center;">
+                                    <button id="revAdd" class="reviewAddBtn" type="submit"
+                                            style="margin-top: 21px;">리뷰 수정
+                                    </button>
+                                    <button id="revAdd2" class="reviewAddBtn" type="submit"
+                                            style="margin-top: 21px;" onclick="backReview()">취소
+                                    </button>
+                                </div>
+                            </form>
+
+                            <input style="opacity: 0" type="text" id="RevScore" name="RevScore"
+                                   th:value="${review.get().revScore}"><br>
+                            <input style="opacity: 0" type="text" id="selectedRevScore" name="selectedRevScore"
+                                   value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        function backReview(){
+            window.location.href = "/user/user_review"
+        }
+
+        function previewImage(input) {
+            var preview = document.getElementById('preview');
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        document.getElementById('file').addEventListener('change', function () {
+            let previews = this.parentElement.querySelectorAll('.preview');
+
+            if (this.files.length > 4) {
+                alert("사진은 최대 4장까지 업로드 가능합니다.");
+            }
+
+            [...this.files].slice(0, 4).forEach((file, index) => {
+                let preview = previews[index];
+                if (!preview) {
+                    preview = previews[0].cloneNode(false);
+                    previews[0].parentNode.appendChild(preview);
+                }
+
+                let reader = new FileReader();
+                reader.onload = function () {
+                    preview.src = reader.result;
+                }
+                reader.readAsDataURL(file);
+            });
+
+
+            previews.forEach((preview, index) => {
+                if (0 === index && 0 === this.files.length)
+                    preview.removeAttribute('src');
+                else if (index >= this.files.length)
+                    preview.remove();
+            });
+
+        });
+
+        document.getElementById("revAdd").addEventListener("click", function (event) {
+            event.preventDefault();
+            var confirmation = confirm("리뷰를 작성하시겠습니까?");
+            if (confirmation) {
+                document.getElementById("addRevForm").submit();
+            } else {
+            }
+        });
+
+        $(document).ready(function () {
+
+            let initialRevScore = parseInt($('#RevScore').val());
+            $('.ratefillYellow').css('width', (initialRevScore * 5.9) * 10 + 'px');
+
+            $('.rate_label').click(function () {
+                let ratingValue = $(this).prev().val();
+                let mid = $(this).closest('.mid');
+                let selectedRevScore = mid.find('#selectedRevScore');
+                let fillWidth = ratingValue * 5.9;
+
+                mid.find('.ratefillYellow').css('width', fillWidth + 'px');
+                selectedRevScore.val(fillWidth);
+
+            });
+
+
+            document.querySelectorAll( "img[mysrc]" ).forEach( e=>io2.observe(e))
+        });
+
+
+    </script>
+</th:block>
+</html>

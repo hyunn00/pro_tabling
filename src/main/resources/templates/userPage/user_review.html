@@ -1,0 +1,447 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{userPage/Layout_userPage2}">
+
+<th:block th:fragment="content">
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <style>
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .mypage_sidebar_nav {
+            color: gray;
+        }
+
+        #reviewSelect {
+            font-weight: bold;
+            color: black;
+            border-bottom: 2px solid black;
+        }
+
+        .reviewForm {
+            display: flex;
+            flex-direction: column;
+            width: 95%;
+        }
+
+        .reviewMainBox {
+            border-top: 1px solid rgba(128, 128, 128, 0.2);
+            padding-top: 13px;
+            padding-bottom: 17px;
+            overflow: hidden;
+            transition: padding-bottom 0.5s ease-in-out;
+        }
+
+        .reviewItem {
+            transition: background-color 0.3s;
+        }
+
+        .reviewMainBox:hover {
+            cursor: pointer;
+        }
+
+        .rating .rate_radio {
+
+            display: none;
+
+        }
+
+        .rating .rate_radio + label {
+            /*border: 0.5px solid gray;*/
+            position: relative;
+            display: block;
+            float: left;
+            z-index: 10;
+            width: 16px;
+            height: 17px;
+            background-image: url("/img/starrate.png");
+            background-repeat: no-repeat;
+            background-size: 16px 17px;
+            /*cursor: pointer;*/
+        }
+
+        .ratefillYellow {
+            background-color: #e9e93c;
+            height: 17px;
+            position: absolute;
+            transition: width 0.3s; /* 너비가 변경될 때 애니메이션을 추가합니다. */
+            z-index: 2;
+            animation: slideInFromLeft 0.5s ease-in-out;
+        }
+
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .ratefillGray {
+            position: absolute;
+            background-color: #808080ad;
+            height: 17px;
+            width: 80px;
+            z-index: 1;
+        }
+
+        #deleteReview {
+            width: 30px;
+            font-size: 85%;
+            color: gray;
+
+        }
+
+        #deleteReview:hover {
+            font-size: 101%;
+            transition: font-size 0.3s;
+
+        }
+
+        #updateReview {
+            width: 32px;
+            font-size: 85%;
+            color: gray;
+
+        }
+
+        #updateReview:hover {
+            font-size: 101%;
+            transition: font-size 0.3s;
+
+        }
+
+        .revContentBox.expand {
+            display: none;
+        }
+
+    </style>
+
+    <div style="display: flex; justify-content: center; margin-top: -132px">
+        <div style="display: flex; justify-content: center; background-color: #FFFFFF; width: 1231px; height: auto; border-radius: 0px; padding: 2% ">
+            <div class="reviewForm" style="">
+                <div style="display: flex; justify-content: space-between; align-items: center">
+                    <h3 th:if="${encodedSearchInput == null or encodedSearchInput == ''}"
+                        th:text="'전체글(' + ${userNoCount} + ')'"></h3>
+                    <h3 th:if="${encodedSearchInput != null and encodedSearchInput != ''}"
+                        th:text="'&quot;' + ${encodedSearchInput} + '&quot;의 검색 결과'"></h3>
+                    <div style="display: flex; align-items: center">
+                        <div>
+                            <select id="revSearchSelect">
+                                <option selected value="content">내용</option>
+                                <option value="resName">가게 이름</option>
+                            </select>
+                            <input type="text" id="searchInput" placeholder="search" style="height: 95%">
+                            <div class="btn" onclick="searchReview()">
+                                <img src="/img/search22.png" style="width: 31px; height: 31px" class="searchReview">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="reviewMainBox" th:each="combinedLists : ${combinedList}"
+                    style="display: flex; justify-content: space-between" id="ReviewTable">
+                    <div>
+                        <div class="reviewItem" style="display:flex; ">
+                            <div>
+                                <th:block th:if="${not #strings.isEmpty(combinedLists.rev.base64Image)}">
+                                    <img style="max-width: 60px; max-height: 60px;"
+                                         th:src="'data:image/png;base64,' + ${combinedLists.rev.base64Image}"
+                                         alt="리뷰이미지">
+                                </th:block>
+                                <th:block th:unless="${not #strings.isEmpty(combinedLists.rev.base64Image)}">
+                                    <div style="width: 60px; height: 60px; overflow: hidden;">
+                                        <img src="/img/no_image.png" alt=""
+                                             style="width: 100%; height: 92%; object-fit: cover;">
+                                    </div>
+                                </th:block>
+                            </div>
+
+                            <!--                        <div th:text="${rev.restNo}"></div>-->
+
+                            <!--                    <div th:text="${reviews.getRestNo().restName}"></div>-->
+                            <div style="margin-left: 10px">
+                                <div style="display: flex">
+                                    <a th:href="'/detail?restNo=' + ${combinedLists.rev.getRestNo().restNo}">
+                                        <li th:text="${combinedLists.rev.getRestNo().restName} + ' >'"
+                                            style="font-size: 12px; padding-bottom: 1px; padding-left: 1px; padding-top: 1px;">
+                                        </li>
+                                    </a>
+                                    <span style=" color: rgba(255,0,0,0.89);margin-left: 5px;font-size: 70%"
+                                          th:if="${combinedLists.rev.getRevStatus() != 'NORMAL'}">🚨 이 리뷰는 신고를 받은 상태입니다, 조속히 내용의 변경을 부탁드립니다.</span>
+                                </div>
+                                <li class="revContentBox" th:if="${#strings.length(combinedLists.rev.revContent) > 70}"
+                                    th:text="${#strings.substring(combinedLists.rev.revContent,0 ,70) + '.....'}"
+                                    style="margin: 10px 0; width: 833.03px; height: 40px; font-size: 12px"></li>
+                                <li class="revContentBox"
+                                    th:unless="${#strings.length(combinedLists.rev.revContent) > 70}"
+                                    th:text="${combinedLists.rev.revContent}"
+                                    style="margin: 10px 0; width: 833.03px; height: 20px; font-size: 12px"></li>
+
+                                <div style="display: flex">
+                                    <!--                            <li th:text="${combinedLists.rev.getUserNo().userId}" style="font-size: 12px; margin-right: 5px">(여기에-->
+                                    <!--                                닉네임)-->
+                                    <!--                            </li>-->
+                                    <li th:text="${combinedLists.timeAgo}" style="font-size: 12px; margin-right: 5px">
+                                        (여기에
+                                        시간)
+                                    </li>
+
+
+                                    <li style="font-size: 12px" class="rating">
+                                        <div class="ratefillGray"></div>
+                                        <div class="ratefillYellow"
+                                             th:style="'width: ' + ${combinedLists.rev.revScore * 16} + 'px'"></div>
+                                        <input type="radio" name="revScore" id="rating1" value="10" class="rate_radio"
+                                               title="1점">
+                                        <label for="rating1"></label>
+                                        <input type="radio" name="revScore" id="rating2" value="20" class="rate_radio"
+                                               title="2점">
+                                        <label for="rating2"></label>
+                                        <input type="radio" name="revScore" id="rating3" value="30" class="rate_radio"
+                                               title="3점">
+                                        <label for="rating3"></label>
+                                        <input type="radio" name="revScore" id="rating4" value="40" class="rate_radio"
+                                               title="4점">
+                                        <label for="rating4"></label>
+                                        <input type="radio" name="revScore" id="rating5" value="50" class="rate_radio"
+                                               title="5점">
+                                        <label for="rating5"></label>
+                                        <input type="hidden" id="selectedRevScore" name="selectedRevScore" value="">
+                                    </li>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="hiddenContent"
+                             style="width: 50%; display: none; align-items: center; flex-direction: column; margin-top: 45px;margin-left: 64px;">
+                            <div>
+                                <div style="display: flex; justify-content: center; flex-direction: column; margin-right: 1px">
+                                    <th:block
+                                            th:with="condition=${combinedLists.rev.getRevStrImg()!=''}, strArray=${combinedLists.rev.getRevStrImg()}">
+                                        <th:block th:if="${condition}">
+                                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin-top: 1px;">
+                                                <th:block th:each="item : ${#strings.arraySplit(strArray, ',')}">
+                                                    <img th:attr="mysrc=${item}" alt="리뷰 이미지1"
+                                                         style="width: 100%; height: 100%">
+                                                </th:block>
+                                            </div>
+                                        </th:block>
+                                        <th:block th:unless="${condition}">
+                                            <img th:if="${combinedLists.rev.base64Image!=''}"
+                                                 th:src="'data:image/png;base64,' + ${combinedLists.rev.base64Image}"
+                                                 alt="리뷰 이미지2"/>
+                                        </th:block>
+                                    </th:block>
+                                    <div style="margin-top: 30px; white-space: pre-wrap; width: 960px"
+                                         th:text="${combinedLists.rev.revContent}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex">
+                        <div id="updateReview" th:onclick="confirmUpdate('수정', /*[[${combinedLists.rev.id}]]*/)">수정
+                        </div>
+                        <div id="deleteReview" th:onclick="confirmDelete('삭제', /*[[${combinedLists.rev.id}]]*/)">삭제
+                        </div>
+                    </div>
+
+                </ul>
+
+                <div th:if="${combinedList == null or #lists.isEmpty(combinedList)}">
+                    <div style="display: flex; flex-direction: column; align-items: center ;justify-content: center; padding: 140px">
+                        <h1>이런!</h1>
+                        <h4>리뷰가 하나도 없어요!</h4>
+                        <span>예약을 이용 후 작성 할 수 있어요..</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${!reviewsPage.isEmpty()}" style="padding: 3% 0">
+        <ul class="pagination justify-content-center">
+            <!-- 이전 페이지 링크 -->
+            <li class="page-item" th:classappend="${!reviewsPage.hasPrevious} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|/user/user_review?searchInput=${encodedSearchInput != null ? encodedSearchInput : ''}&amp;selectedOption=${selectedOption != null ? selectedOption : ''}&amp;page=${reviewsPage.number-1 < 0 ? 0 : reviewsPage.number-1}|}">
+                    <span> < </span>
+                </a>
+            </li>
+
+            <!-- 페이지 번호 링크 -->
+            <li th:each="page: ${#numbers.sequence(0, reviewsPage.totalPages-1)}"
+                th:if="${page >= reviewsPage.number-5 and page <= reviewsPage.number+5}"
+                th:classappend="${page == reviewsPage.number} ? 'active'" class="page-item">
+                <a th:text="${page + 1}" class="page-link"
+                   th:href="@{|/user/user_review?searchInput=${encodedSearchInput != null ? encodedSearchInput : ''}&amp;selectedOption=${selectedOption != null ? selectedOption : ''}&amp;page=${page}|}"></a>
+            </li>
+
+            <!-- 다음 페이지 링크 -->
+            <li class="page-item" th:classappend="${!reviewsPage.hasNext} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|/user/user_review?searchInput=${encodedSearchInput != null ? encodedSearchInput : ''}&amp;selectedOption=${selectedOption != null ? selectedOption : ''}&amp;page=${reviewsPage.number+1}|}">
+                    <span> > </span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+
+    <script>
+        function confirmDelete(message, revNo) {
+            var result = confirm('삭제 하시겠습니까?');
+
+            if (result) {
+                console.log(revNo);
+                deleteReview(revNo);
+            } else {
+                alert('삭제가 취소되었습니다.');
+            }
+        }
+
+        function deleteReview(revNo) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/user/deleteReview/' + revNo, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        alert('삭제가 완료되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('삭제 도중 오류가 발생했습니다.');
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        function confirmUpdate(message, revNo) {
+            var result = confirm('리뷰를 수정 하시겠습니까?');
+
+            if (result) {
+                console.log(revNo);
+                window.location.href = '/user/updateReviewForm/' + revNo;
+
+            } else {
+                alert('취소되었습니다.');
+            }
+        }
+
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            localStorage.removeItem("searchInput");
+
+            var reviews = document.querySelectorAll('.reviewItem');
+
+            reviews.forEach(function (review) {
+                review.addEventListener('click', function () {
+                    var reviewMainBox = this.closest('.reviewMainBox');
+                    if (reviewMainBox) {
+                        if (reviewMainBox.classList.contains('selected')) {
+                            reviewMainBox.style.paddingBottom = '';
+                            reviewMainBox.classList.remove('selected');
+
+                            var revContentBox = review.querySelector('.revContentBox');
+                            if (revContentBox) {
+                                revContentBox.classList.remove('expand');
+                            }
+
+                            var hiddenContent = reviewMainBox.querySelector('.hiddenContent');
+                            if (hiddenContent) {
+                                $(hiddenContent).fadeOut(200);
+                            }
+                        } else {
+                            reviews.forEach(function (otherReview) {
+                                var otherReviewMainBox = otherReview.closest('.reviewMainBox');
+
+                                if (otherReviewMainBox && otherReviewMainBox.classList.contains('selected')) {
+                                    otherReviewMainBox.style.paddingBottom = '';
+                                    otherReviewMainBox.classList.remove('selected');
+
+                                    var revContentBox = otherReview.querySelector('.revContentBox');
+                                    if (revContentBox) {
+                                        revContentBox.classList.remove('expand');
+                                    }
+
+                                    var otherHiddenContent = otherReviewMainBox.querySelector('.hiddenContent');
+                                    if (otherHiddenContent) {
+                                        $(otherHiddenContent).fadeOut(200);
+                                    }
+                                }
+                            });
+                            var revContentBox = review.querySelector('.revContentBox');
+                            if (revContentBox) {
+                                revContentBox.classList.add('expand');
+                            }
+                            reviewMainBox.style.paddingBottom = '100px';
+                            reviewMainBox.classList.add('selected');
+
+                            var hiddenContent = reviewMainBox.querySelector('.hiddenContent');
+                            if (hiddenContent) {
+                                $(hiddenContent).fadeIn(430, function () {
+                                    var selectedOffset = reviewMainBox.offsetTop;
+                                    window.scrollTo({
+                                        top: selectedOffset,
+                                        behavior: 'auto'
+                                    });
+                                });
+                            }
+                        }
+                    }
+                });
+            });
+        });
+
+        function searchReview() {
+            let searchInput = document.getElementById("searchInput").value;
+            let selectedOption = document.getElementById("revSearchSelect").value;
+
+            let encodedSearchInput = (searchInput !== null && searchInput !== undefined ? encodeURIComponent(searchInput) : '');
+            let selectedOptionValue = (selectedOption !== null && selectedOption !== undefined ? selectedOption : '');
+
+            localStorage.setItem("searchInput", searchInput);
+
+            let url = `/user/user_review?searchInput=${encodedSearchInput}&selectedOption=${selectedOptionValue}&page=0`;
+
+            window.history.pushState({searchInput, selectedOption}, "Search Results", url);
+
+            fetch(url)
+                .then(resp => resp.text())
+                .then(data => {
+                    let doc = new DOMParser().parseFromString(data, 'text/html');
+                    document.getElementById("ReviewTable").innerHTML = doc.getElementById("ReviewTable").innerHTML;
+                    document.querySelector(".pagination").innerHTML = doc.querySelector(".pagination").innerHTML;
+                    location.reload();
+                });
+
+        }
+
+        window.onload = function () {
+            let savedSearchInput = localStorage.getItem("searchInput");
+            if (savedSearchInput !== null && savedSearchInput !== undefined) {
+                document.getElementById("searchInput").value = savedSearchInput;
+            } else {
+                localStorage.removeItem("searchInput");
+            }
+        };
+
+
+    </script>
+    <script src="/js/imglazy.js"></script>
+
+</th:block>
+</html>

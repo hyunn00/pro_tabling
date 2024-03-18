@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org/"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{owner/myPage_layout}">
+
+<th:block th:fragment="content">
+    <div class="table-item">
+        <ul>
+            <li>작성자</li>
+            <li>작성일</li>
+            <li>평점</li>
+            <li>상태</li>
+        </ul>
+    </div>
+    <th:block th:if="${reviewList.size() == 0}" >
+        <div style="width:100%; text-align: center; margin : 50px 0;">
+            <h3>죄송합니다.</h3>
+            <p>현재 등록된 리뷰가 없습니다.</p>
+        </div>
+    </th:block>
+    <th:block th:each="review : ${reviewList}" th:object="${review}">
+            <div class="table-item">
+                <ul class="table-preview">
+                    <li>[[*{getUserNo().getUserName()}]]</li>
+                    <li>[[*{getRevWriteTime()}]]</li>
+                    <li>[[*{getRevScore()}]]</li>
+                    <li>[[*{getRevStatus()}]]</li>
+                </ul>
+                <div class="table-container">
+                    <div class="img_box">
+                        <th:block th:with="condition=*{getRevStrImg()!=''}, strArray=*{getRevStrImg()}">
+                            <th:block th:if="${condition && #strings.arraySplit(strArray, ',').length != 1 }">
+                                <div class="slider">
+                                    <div class="imgList">
+                                        <th:block th:each="item : ${#strings.arraySplit(strArray, ',')}">
+                                            <img th:attr="mysrc=${item}" alt="리뷰 이미지">
+                                        </th:block>
+                                    </div>
+                                    <button class="prev"><</button>
+                                    <button class="next">></button>
+                                </div>
+                            </th:block>
+                            <th:block th:unless="${condition && #strings.arraySplit(strArray, ',').length != 1}">
+                                <div class="slider">
+                                    <div class="imgList">
+                                        <th:block th:if="*{getRevStrImg() == ''}">
+                                            <img th:if="${review.base64Image!=''}"
+                                                 th:src="'data:image/png;base64,' + ${review.base64Image}"
+                                                 alt="리뷰 이미지"/>
+                                            <img th:unless="${review.base64Image!=''}"
+                                                 src="/img/no_image.png"
+                                                 alt="리뷰 이미지"/>
+                                        </th:block>
+                                        <th:block th:unless="*{getRevStrImg() == ''}">
+                                            <img th:src="'data:image/png;base64,' + ${review.base64Image}"
+                                                 alt="리뷰 이미지"/>
+                                        </th:block>
+                                    </div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                    <div class="formDiv">
+                        <p><label>작성자</label><input type="text" th:value="*{getUserNo().getUserName()}" readonly></p>
+                        <p><label>작성일</label><input type="text" th:value="*{getRevWriteTime()}" readonly></p>
+                        <p><label>평점</label><input type="text" th:value="*{getRevScore()}" readonly></p>
+                        <p><label>내용</label><textarea readonly rows="5">[[*{getRevContent()}]]</textarea></p>
+                        <form id="reportReviewForm" th:action="@{/owner/review/report/{revNo}(revNo=*{getId()})}" method="post" onsubmit="reviewReportSubmit(event)">
+                            <p><label>신고 이유</label>
+                                <select name="revStatus" th:value="*{getRevStatus()}">
+                                    <option th:selected="*{getRevStatus() == 'NORMAL'}" value="NORMAL">일반</option>
+                                    <option th:selected="*{getRevStatus() == 'INSULT'}" value="INSULT">욕설 및 비방</option>
+                                    <option th:selected="*{getRevStatus() == 'FALSE_EXAGGERATION'}" value="FALSE_EXAGGERATION">허위 &#183; 과장</option>
+                                    <option th:selected="*{getRevStatus() == 'WRONG_IMAGE'}" value="WRONG_IMAGE">잘못된 사진</option>
+                                    <option th:selected="*{getRevStatus() == 'ADVERTISEMENT'}" value="ADVERTISEMENT">광고</option>
+                                    <option th:selected="*{getRevStatus() == 'OTHER'}" value="OTHER">기타</option>
+                                </select>
+                                <input type="submit" value="신고" style="height: auto;">
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+    </th:block>
+    <script src="/js/imglazy.js"></script>
+    <script>
+        let selectList = document.querySelectorAll('select[name=revStatus]');
+
+        selectList.forEach(function(select) {
+            select.addEventListener("change", function() {
+                let input = select.nextElementSibling;
+                if (select.value === 'NORMAL') {
+                    input.value = '신고 해제';
+                } else {
+                    input.value = '신고';
+                }
+            });
+        });
+
+        function reviewReportSubmit(event) {
+            if (confirm("등록된 리뷰를 상태값을 변경하시겠습니까?")) {
+                let form = document.getElementById("reportReviewForm");
+                form.submit();
+            }else {
+                event.preventDefault();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let tableItems = document.querySelectorAll('.table-preview');
+
+            tableItems.forEach(function (tableItem) {
+                tableItem.addEventListener('click', function () {
+                    let tableContainer = this.nextElementSibling;
+
+                    document.querySelectorAll('.table-container').forEach(function(container) {
+                        if (container !== tableContainer && container.style.display === 'flex')
+                            container.style.display = 'none'; // 다른 리스트를 닫음
+                    });
+
+                    if (tableContainer) {
+                        if (tableContainer.style.display === 'flex') {
+                            tableContainer.style.display = 'none';
+                        } else {
+                            tableContainer.style.display = 'flex';
+                        }
+                    }
+                });
+            });
+
+            // 이벤트 위임을 통해 버튼에 클릭 이벤트를 추가합니다.
+            document.querySelectorAll('.slider').forEach((slider)=>{
+                const backBtn = slider.querySelector('.prev');
+                const nextBtn = slider.querySelector('.next');
+                const images = slider.querySelector('.imgList');
+
+
+
+                let pages = 0;
+                let positionValue = 0;
+
+                function calculatePages(images) {
+                    const imgWidth = getoffsetWidth(images);
+                    const containerWidth = getScrollWidth(images);
+                    console.log(imgWidth)
+                    console.log(containerWidth)
+                    console.log(Math.floor(containerWidth / imgWidth))
+                    return Math.floor(containerWidth / imgWidth);
+                }
+
+                // function next() {
+                const next = function() {
+                    const totalPage = calculatePages(images) ;
+
+                    if (pages < totalPage) {
+                        backBtn.removeAttribute('disabled');
+                        positionValue -= getoffsetWidth(images);
+                        images.style.transform = `translateX(${positionValue}px)`;
+                        pages += 1;
+                    }
+                    if (pages === totalPage) {
+                        nextBtn.setAttribute('disabled', 'true');
+                    }
+                }
+
+                const back = function() {
+                    if (pages > 0) {
+                        nextBtn.removeAttribute('disabled');
+                        positionValue += getoffsetWidth(images);
+                        images.style.transform = `translateX(${positionValue}px)`;
+                        pages -= 1;
+                    }
+                    if (pages === 0) {
+                        backBtn.setAttribute('disabled', 'true');
+                    }
+                }
+
+                // backBtn, nextBtn에 클릭 이벤트를 추가합니다.
+                backBtn?.addEventListener('click', back);
+                nextBtn?.addEventListener('click', next);
+
+                // 주어진 요소의 너비를 픽셀로 반환하는 함수
+                function getScrollWidth(element) {
+                    return element.scrollWidth;
+                }
+
+                function getoffsetWidth(element) {
+                    return element.offsetWidth;
+                }
+            });
+        });
+
+    </script>
+</th:block>
+</html>

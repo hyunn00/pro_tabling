@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org/"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+<!--<link rel="stylesheet" href="../../static/css/main.css">-->
+<div th:fragment="managerContent">
+
+    <div id="right2">
+
+        <div style="display: flex; margin-top: 0">
+            <div>
+                <a href="managerPage_QA">
+                    <ion-icon id="alarm" name="mail-unread-outline"
+                              style="font-size: 45px; margin-right: 13px"></ion-icon>
+                </a>
+            </div>
+            <div>
+                <a href="managerPage_QA">
+                    <span th:text="'전체 문의 : ' + ${qa.size()}"></span><br>
+                    <span th:text="'미 답변 문의 : ' + ${unansweredCount}"></span>
+                </a>
+            </div>
+        </div>
+
+        <div id="main-box" class="main-box">
+            <div class="box-header">
+                <h2 th:text="'전체 회원 현황: ' + ${UInfo[0]} +' 명'"></h2>
+            </div>
+            <div class="box-content">
+                <div class="chart-container" style="margin-left: 200px">
+                    <canvas id="userChart" class="chart"></canvas>
+                </div>
+                <div class="chart-container" style="margin-right: 200px">
+                    <canvas id="userBarChart" class="chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="main-box2" class="main-box">
+            <div class="box-header">
+                <h2 th:text="'전체 가게 현황: ' + ${dList.size()} + ' 개'"></h2>
+            </div>
+            <div class="box-content" style="margin-left: 200px">
+                <div class="chart-container">
+                    <canvas id="dinningChart" class="chart"></canvas>
+                </div>
+                <div class="chart-container" style="margin-right: 200px">
+                    <canvas id="dinningBarChart" class="chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+<!--        <div>-->
+<!--            <h2>방문자 통계 집계? x,y축 있는 점선으로 이어진 그래프</h2>-->
+<!--        </div>-->
+
+
+    </div>
+
+    <script th:inline="javascript">
+
+        let UInfo = /*[[${UInfo}]]*/ [];
+
+        // console.log("첫 번째 값: " + UInfo[0]);
+
+        function drawGraph() {
+            if ( ![[${drawGraph}]])
+                return;
+
+            // ----------------------------도넛, 막대그래프 를 위한 변수 선언------------------
+            var uListSize = [[${uList != null ? uList.size() : 0}]];
+            var dListSize = [[${dList != null ? dList.size() : 0}]];
+
+            [# th:if="${userStat != null}"]
+            [# th:each = "entry : ${userStat.entrySet()}"]
+            userDataList.push( [[${entry.value}]] )
+
+                [/][/]
+            let restDataMap = {};
+            [# th:if="${restStat != null}"]
+            [# th:each = "entry : ${restStat.entrySet()}"]
+            restDataMap[ [[${entry.key}]] ]=[[${entry.value}]];
+            [/][/]
+            // 객체의 키와 값을 배열로 변환
+            var dataArray = Object.entries(restDataMap);
+            // 값이 큰 순으로 정렬
+            dataArray.sort((a, b) => b[1] - a[1]);
+            let restDataColNames = [];
+            let restDataList = [];
+            dataArray.forEach( elem=>{
+                restDataColNames.push( elem[0] );
+                restDataList.push( elem[1] );
+            })
+
+          let userDataList={
+                '고객':UInfo[1],
+                '점주':UInfo[3],
+                '블랙리스트':UInfo[2],
+
+            }
+
+            var userData = {
+                labels: ['고객', '점주', '블랙리스트'],
+                datasets: [{
+                    label: '회원 현황',
+                    data: Object.values(userDataList),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.5)',
+                        'rgba(54, 162, 235, 0.5)',
+                        'rgba(54, 102, 235, 0.5)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            var dinningData = {
+                labels: restDataColNames,
+                datasets: [{
+                    label: '가게 업태',
+                    data: restDataList,
+                    backgroundColor: [
+                        'rgba(255, 165, 0, 0.5)', // 주황
+                        'rgba(255, 0, 0, 0.5)',   // 빨강
+                        'rgba(255, 99, 132, 0.5)',
+                        'rgba(54, 162, 235, 0.5)',
+                        'rgba(54, 102, 235, 0.5)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            // -------------------------------도넛 그래프--------------------------------
+            let userCtx = document.getElementById('userChart').getContext('2d');
+            let dinningCtx = document.getElementById('dinningChart').getContext('2d');
+            // -------------------------------막대 그래프--------------------------------
+            let userCtx2 = document.getElementById('userBarChart').getContext('2d');
+            let dinningCtx2 = document.getElementById('dinningBarChart').getContext('2d');
+
+
+
+                [ [userCtx, 'doughnut', userData],  [dinningCtx, 'doughnut', dinningData]
+                , [userCtx2, 'bar', userData], [dinningCtx2, 'bar', dinningData]
+            ].forEach(elem => {
+                new Chart(elem[0], {
+                    type: elem[1],
+                    data: elem[2],
+                    options: {}
+                });
+            });
+        }
+
+        drawGraph();
+
+    </script>
+</div>
+
+</html>
+
+

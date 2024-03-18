@@ -1,0 +1,425 @@
+/** {*/
+/*    border: solid 1px black;*/
+/*}*/
+
+a {
+    text-decoration: none;
+}
+
+#top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+body {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+}
+
+
+/* 콘텐츠 영역 관련 */
+
+#right2 {
+    margin-top: 20px;
+    margin-right: 110px;
+    background-color: #ffffff;
+    padding: 90px;
+    border-radius: 10px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+    width: 75%;
+    height: auto;
+    float: right;
+    box-sizing: border-box;
+    /*overflow:auto;*/
+}
+
+/* 사이드바 관련 */
+.w3-sidebar {
+    width: 200px; /* 사이드바 너비 */
+    background-color: #333;
+    color: #FFF;
+    height: 100vh; /* viewport 높이의 100% */
+    overflow-y: auto; /* 너무 긴 경우 스크롤 허용 */
+    /*padding: 0 16px;*/
+}
+
+.w3-sidebar .w3-bar-item{
+    padding: 6px 24px;
+}
+
+
+
+/* DASH BOARD 페이지 그래프 관련 */
+
+.main-box {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.box-header {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f7f7f7;
+    text-align: center;
+}
+
+.box-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.box-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.chart-container {
+    width: 45%;
+    height: 300px;
+}
+
+.chart {
+    width: 100%;
+    height: 100%;
+}
+
+
+
+/*각 페이지 테이블 관련*/
+
+table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+th {
+    background-color: #e9ecef;
+    color: #495057;
+    font-weight: bold;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+.pagination {
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination li {
+    cursor: pointer;
+}
+
+.pagination li.active a {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.pagination li.disabled a {
+    color: #6c757d;
+    pointer-events: none;
+    cursor: default;
+}
+
+
+/*수정, 삭제 버튼 관련*/
+
+.fifth {
+    border-color: black;
+    width: 90px;
+    height: 50px;
+/ / border: 0;
+    border-radius: 10px;
+    color: black;;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: color 150ms ease-in-out;
+
+    &:after {
+        content: '';
+        position: absolute;
+        display: block;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 100%;
+        background: black;
+        z-index: -1;
+        transition: width 150ms ease-in-out;
+    }
+
+    &:hover {
+        color: white;
+
+        &:after {
+            width: 110%;
+        }
+    }
+}
+
+
+/* 나머지는 몰?루 */
+
+#NBoxDiv {
+    margin-left: 960px;
+    margin-bottom: 10px;
+}
+
+.ps {
+    text-align: center;
+}
+
+.ps {
+    text-align: center;
+}
+
+
+
+
+
+/* qu */
+
+.qu {
+    width: 900px;
+    margin: 20px auto auto auto;
+    border: solid 2px gray;
+    border-radius: 10px;
+    background-color: #f2f2f2;
+}
+
+.qu form{
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.qu label {
+    font-weight: bold;
+    display: block;
+}
+
+.qu input[type="text"],
+.qu textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /*background-color: #f2f2f2;*/
+}
+
+.qu textarea {
+    resize: vertical;
+}
+
+
+
+/* an */
+
+.an {
+    width: 900px;
+    margin: 20px auto auto auto;
+    border: solid 2px gray;
+    border-radius: 10px;
+    background-color: #f2f2f2;
+}
+
+.an form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.an form p {
+    margin-bottom: 15px;
+}
+
+.an label {
+    font-weight: bold;
+    display: block;
+}
+
+.an input[type="text"],
+.an textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /*background-color: #f2f2f2;*/
+}
+
+.an textarea {
+    resize: vertical;
+}
+
+/*.an h2 {*/
+/*    margin-left: 10px;*/
+/*}*/
+
+
+
+
+.searchDiv {
+    float: right;
+    margin-bottom: 20px;
+}
+
+.searchDiv input {
+
+    height: 35px;
+    border-radius: 10px;
+}
+
+.searchDiv button {
+    padding: 8px;
+    margin-right: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.searchDiv input:focus {
+    outline: none;
+    border-color: dodgerblue;
+}
+
+
+
+
+.searchDiv button {
+    padding: 8px 16px;
+    background-color: gray;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.searchDiv button:hover {
+    color: black;
+}
+
+
+/* 화면이 768px 이하일 때 */
+@media screen and (max-width: 768px) {
+    .w3-sidebar {
+        width: 100%; /* 전체 너비로 변경 */
+    }
+}
+
+.blackBtn{
+    background-color: white;
+    border: solid 1px black;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 10px;
+
+}
+
+.custom-select {
+    display: flex;
+    justify-content: center;
+}
+
+.custom-select select {
+    text-align: center;
+    display: block;
+    width: 50px;
+    height: 40px;
+    font-size: 16px;
+    line-height: 40px;
+    margin-left: 5px;
+    color: #555;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.custom-select button {
+    display: inline-block;
+    height: 40px;
+    padding: 0 20px;
+    font-size: 16px;
+    /*line-height: 40px;*/
+    color: black;
+    background-color: white;
+    margin-left: 10px;
+    border: solid 1px black;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.custom-select button:hover {
+    background-color: #e9ecef;
+}
+
+#holdDetail{
+    width: 1000px;
+    position: absolute;
+    left: 30%;
+    top: 20%;
+    background: white;
+    display: none;
+    /*border: 1px solid #888;*/
+    border-color: #e0e0e0;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+#closeModalIcon{
+    float: right;
+    font-size: 34px;
+    cursor: pointer;
+}
+
+/* 공지사항 추가 관련 */
+
+#addFile {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+    height: 250px;
+}
+
+#preview {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.image-preview {
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.image-preview img {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: cover;
+}
+

@@ -1,0 +1,160 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<div th:fragment="detailContent">
+    <div id="imgSlider">
+        <div id="sliderContainer">
+            <th:block  th:each="event : ${newEvents}">
+                <a th:href="@{/event/detail/{eventNo}(eventNo=${event.getEventNo()})}">
+                    <div class="mySlider">
+                        <th:block th:if="${event.getEventImg() != null}">
+                            <img class="slideshowImg" th:src="'data:image/jpeg;base64,' + ${event.getBase64Image()}">
+                        </th:block>
+                        <th:block th:unless="${event.getEventImg() != null}">
+                            <img class="slideshowImg" th:src="/img/no_image.png">
+                        </th:block>
+                        <div class="sliderDesc">
+                            <h3>[ [[${event.getRestNo().getRestName()}]] ] [[${event.getEventTitle()}]]</h3>
+                            <p>[[${event.getEventStartTime()}]]~[[${event.getEventEndTime()}]]</p>
+                        </div>
+                    </div>
+                </a>
+            </th:block>
+        </div>
+    </div>
+
+    <div id="eventList">
+        <div id="eventHeader">
+            <h2>전체 이벤트</h2>
+            <button onclick="change('new')">진행 중 이벤트</button>
+            <button onclick="change('future')">다가올 이벤트</button>
+            <button onclick="change('past')">종료된 이벤트</button>
+        </div>
+        <div id="newEventBox" class="eventBox">
+            <ul class="eventItems">
+                <th:block th:each="event : ${newEvents}" >
+                    <li class="eventItem">
+                        <a th:href="@{/event/detail/{eventNo}(eventNo=${event.getEventNo()})}">
+                            <div class="eventImg">
+                                <th:block th:if="${event.getEventImg() != null}">
+                                    <img th:src="'data:image/jpeg;base64,' + ${event.getBase64Image()}">
+                                </th:block>
+                                <th:block th:unless="${event.getEventImg() != null}">
+                                    <img src="/img/no_image.png">
+                                </th:block>
+                            </div>
+                            <div class="eventDesc">
+                                <p class="txt1">[ [[${event.getRestNo().getRestName()}]] ] [[${event.getEventTitle()}]]</p>
+                                <p class="txt2">[[${event.getEventStartTime()}]] ~ [[${event.getEventEndTime()}]]</p>
+                            </div>
+                        </a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+
+        <div id="pastEventBox" class="eventBox" style="display: none">
+            <th:block th:if="${pastEvents.size() == 0}" >
+                <div style="width:100%; text-align: center; margin : 50px 0;">
+                    <h3>죄송합니다.</h3>
+                    <p>현재 진행 중인 이벤트가 없습니다.</p>
+                </div>
+            </th:block>
+            <ul class="eventItems">
+                <th:block th:each="event : ${pastEvents}" >
+                    <li class="eventItem">
+                        <a th:href="@{/event/detail/{eventNo}(eventNo=${event.getEventNo()})}">
+                            <div class="eventImg">
+                                <th:block th:if="${event.getEventImg() != null}">
+                                    <img th:src="'data:image/jpeg;base64,' + ${event.getBase64Image()}">
+                                </th:block>
+                                <th:block th:unless="${event.getEventImg() != null}">
+                                    <img src="/img/no_image.png">
+                                </th:block>
+                            </div>
+                            <div class="eventDesc">
+                                <p class="txt1">[ [[${event.getRestNo().getRestName()}]] ] [[${event.getEventTitle()}]]</p>
+                                <p class="txt2">[[${event.getEventStartTime()}]] ~ [[${event.getEventEndTime()}]]</p>
+                            </div>
+                        </a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+
+        <div id="futureEventBox" class="eventBox" style="display: none">
+            <th:block th:if="${futureEvents.size() == 0}" >
+                <div style="width:100%; text-align: center; margin : 50px 0;">
+                    <h3>죄송합니다.</h3>
+                    <p>현재 진행 예정인 이벤트가 없습니다.</p>
+                </div>
+            </th:block>
+            <ul class="eventItems">
+                <th:block th:each="event : ${futureEvents}" >
+                    <li class="eventItem">
+                        <a th:href="@{/event/detail/{eventNo}(eventNo=${event.getEventNo()})}">
+                            <div class="eventImg">
+                                <th:block th:if="${event.getEventImg() != null}">
+                                    <img th:src="'data:image/jpeg;base64,' + ${event.getBase64Image()}">
+                                </th:block>
+                                <th:block th:unless="${event.getEventImg() != null}">
+                                    <img src="/img/no_image.png">
+                                </th:block>
+                            </div>
+                            <div class="eventDesc">
+                                <p class="txt1">[ [[${event.getRestNo().getRestName()}]] ] [[${event.getEventTitle()}]]</p>
+                                <p class="txt2">[[${event.getEventStartTime()}]] ~ [[${event.getEventEndTime()}]]</p>
+                            </div>
+                        </a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+    </div>
+    <script>
+
+        document.addEventListener('mouseover', function (event) {
+            let slide = event.target.closest("#imgSlider #sliderContainer");
+            if (slide) {
+                let mouseLeaveHandler = function (event) {
+                    slide.classList.remove("over")
+                    this.removeEventListener('mouseleave', mouseLeaveHandler);
+                }
+
+                slide.classList.add("over");
+                slide.addEventListener('mouseleave', mouseLeaveHandler);
+            }
+        });
+
+        setTimeout(moveToSlide, 3000);
+        async function moveToSlide() {
+            setTimeout(moveToSlide, 3000);
+            const listElements = document.querySelectorAll('#imgSlider #sliderContainer');
+            const slider = listElements[0];
+
+            const index = 1;
+            const slideWidth = 800; //slider.clientWidth;
+            const newPosition = -slideWidth * index;
+
+            const SLIDE_SIZE = 1;
+            const selectedDivs = Array.from(slider.children).slice(0, SLIDE_SIZE);
+            let slideIndex = (slider?.index);
+            if (1 === slideIndex)
+                selectedDivs.forEach(div => slider.appendChild(div));
+
+            slider.style.transition = "";
+            slider.style.transform = "";
+
+            await sleep(100)
+            slider.style.transition = "transform 0.5s ease";
+            slider.style.transform = `translateX(${newPosition}px)`;
+
+            slider.index = index;
+        }
+
+        function change(period) {
+            document.getElementById("newEventBox").style.display = period === 'new' ? "block" : "none";
+            document.getElementById("pastEventBox").style.display = period === 'past' ? "block" : "none";
+            document.getElementById("futureEventBox").style.display = period === 'future' ? "block" : "none";
+        }
+    </script>
+</div>
+</html>

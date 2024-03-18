@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>점주 추가</title>
+</head>
+
+<div th:fragment="managerContent">
+
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+        }
+
+        ion-icon:hover {
+            cursor: pointer;
+        }
+    </style>
+
+    <div id="right2">
+
+        <ion-icon style="float:right; font-size: 40px" onclick="history.go(-1);" name="close-outline"></ion-icon>
+
+        <div class="formDiv" style="width: 1000px">
+            <form id="form2" action="/manager/managerPage_JAdd" method="post" enctype="multipart/form-data"
+                  style="display: flex">
+
+                <div style="flex: 1; width: 300px; height: 400px; text-align: right; margin-right: 30px">
+                    <img id="preview" src="/images/jumPerson.png" style="width: 300px; height: 400px; margin-right: 160px;" alt="">
+                    <br>
+                    <input type="file" name="file" id="file" style="margin-right: 139px"><br>
+                </div>
+
+                <div style="flex:1; margin-top: 50px">
+                    <p><label>이름 </label><input type="text" name="userName" id="userName"></p><br>
+                    <p><label>ID </label><input type="text" name="userId" id="userId"></p><br>
+                    <p><label>비밀번호 </label><input type="text" name="userPassword" id="userPassword"></p><br>
+                    <p><label>이메일 </label><input type="text" name="userEmail" id="userEmail"></p><br>
+                    <p><label>전화번호 </label><input type="text" name="userTel" id="userTel"></p><br>
+                    <p><input type="hidden" name="userAuth" value="OWNER"></p>
+                </div>
+            </form>
+        </div>
+        <br><br>
+        <div class="container">
+            <button id="submit" class="fifth" type="button">등록</button>
+<!--            <button style="margin-left: 50px" onclick="history.go(-1);" class="fifth" id="backButton">이전</button>-->
+        </div>
+    </div>
+
+    <script>
+        // 파일 입력란의 변경 이벤트를 감지하여 이미지를 표시하는 함수
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    document.getElementById('preview').setAttribute('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        document.getElementById('file').addEventListener('change', function () {
+            previewImage(this);
+        });
+
+
+        document.getElementById("submit").addEventListener("click", function (event) {
+            // 각 필드의 값이 비어 있는지 확인
+            const userName = document.getElementById('userName').value;
+            const userId = document.getElementById('userId').value;
+            const userPassword = document.getElementById('userPassword').value;
+            const userEmail = document.getElementById('userEmail').value;
+            const userTel = document.getElementById('userTel').value;
+
+            if (userName === '' || userId === '' || userPassword === '' || userEmail === '' || userTel === '') {
+                swal('모든 항목을 입력하세요 :)');
+                return;
+            }
+
+            swal({
+                title: "등록하시겠습니까?",
+                text: "추가한 내용을 확인하고 등록하시겠습니까?",
+                icon: "info",
+                buttons: {
+                    confirm : {
+                        text: "등록",
+                        value: true,
+                        visible: true,
+                        className: "confirm-button",
+                        closeModal: true
+                    },
+                    cancel : {
+                        text : "취소",
+                        value : null,
+                        visible : true,
+                        className: "cancel-button",
+                        closeModal : true,
+                    }
+                },
+                dangerMode: false,
+            })
+                .then((willSubmit) => {
+                    if (willSubmit) {
+                        swal("Success!", "(점주)" + " " + userName + "님의 정보가 등록 되었습니다!", "success")
+                            .then(function (){
+                                document.getElementById("form2").submit(); // 폼 제출
+                            });
+                    } else {
+                        // swal("Cancelled", "등록이 취소되었습니다.", "error");
+                        swal("등록이 취소 되었습니다.")
+                        // 기본 이미지로 다시 설정
+                        // document.getElementById('preview').setAttribute('src', '/images/jumPerson.png');
+                        // 파일 입력 필드 초기화
+                        // document.getElementById('file').value = null;
+                    }
+                });
+        });
+
+    </script>
+</div>
+</html>
+
+
+
